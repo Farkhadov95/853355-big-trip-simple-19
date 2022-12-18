@@ -21,4 +21,3 @@ render(new ListFilterView(), filtersContainer);
 render(new ListSortView(), eventsListContainer);
 
 eventsPresenter.init();
-
