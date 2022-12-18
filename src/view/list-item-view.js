@@ -1,7 +1,7 @@
 import {createElement} from '../render.js';
 
 function createListItemTemplate(event) {
-  const {base_price, date_from, date_to, destination, offers, type} = event;
+  const {basePrice, dateFrom, dateTo, destination, offers, type} = event;
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -12,13 +12,13 @@ function createListItemTemplate(event) {
         <h3 class="event__title">${type} ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-19T11:20">${date_from}</time>
+            <time class="event__start-time" datetime="2019-03-19T11:20">${dateFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-19T13:00">${date_to}</time>
+            <time class="event__end-time" datetime="2019-03-19T13:00">${dateTo}</time>
           </p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${base_price}</span>
+          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">

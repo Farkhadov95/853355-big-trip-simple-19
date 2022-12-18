@@ -3,9 +3,9 @@ import { POINTS_TYPE } from '../const.js';
 
 const mockPoints = [
   {
-    'base_price': 120,
-    'date_from': '2019-07-10T22:55:56.845Z',
-    'date_to': '2019-07-11T11:22:13.375Z',
+    'basePrice': 120,
+    'dateFrom': '2019-07-10T22:55:56.845Z',
+    'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': '0',
     'offers': [
@@ -22,9 +22,9 @@ const mockPoints = [
   },
 
   {
-    'base_price': 80,
-    'date_from': '2011-07-10T22:55:56.845Z',
-    'date_to': '2019-07-11T11:22:13.375Z',
+    'basePrice': 80,
+    'dateFrom': '2011-07-10T22:55:56.845Z',
+    'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Chamonix',
     'id': '0',
     'offers': [
@@ -36,9 +36,9 @@ const mockPoints = [
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
-    'base_price': 30,
-    'date_from': '2013-07-10T22:55:56.845Z',
-    'date_to': '2019-07-11T11:22:13.375Z',
+    'basePrice': 30,
+    'dateFrom': '2013-07-10T22:55:56.845Z',
+    'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': '0',
     'offers': [
@@ -54,9 +54,9 @@ const mockPoints = [
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
-    'base_price': 200,
-    'date_from': '2016-07-10T22:55:56.845Z',
-    'date_to': '2019-07-11T11:22:13.375Z',
+    'basePrice': 200,
+    'dateFrom': '2016-07-10T22:55:56.845Z',
+    'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': '0',
     'offers': [
@@ -68,9 +68,9 @@ const mockPoints = [
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
-    'base_price': 455,
-    'date_from': '2022-07-10T22:55:56.845Z',
-    'date_to': '2031-07-11T11:22:13.375Z',
+    'basePrice': 455,
+    'dateFrom': '2022-07-10T22:55:56.845Z',
+    'dateTo': '2031-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': '0',
     'offers': [
