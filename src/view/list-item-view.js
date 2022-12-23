@@ -1,7 +1,11 @@
 import {createElement} from '../render.js';
+import { humanizeEventDueDate } from '../utils.js';
+
 
 function createListItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = event;
+  const formattedDateFrom = humanizeEventDueDate(dateFrom);
+  const formattedDateTo = humanizeEventDueDate(dateTo);
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -12,9 +16,9 @@ function createListItemTemplate(event) {
         <h3 class="event__title">${type} ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-19T11:20">${dateFrom}</time>
+            <time class="event__start-time" datetime="2019-03-19T11:20">${formattedDateFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-19T13:00">${dateTo}</time>
+            <time class="event__end-time" datetime="2019-03-19T13:00">${formattedDateTo}</time>
           </p>
         </div>
         <p class="event__price">

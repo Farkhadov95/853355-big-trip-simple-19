@@ -75,11 +75,128 @@ const mockPoints = [
     'id': '0',
     'offers': [
       {
-        title: 'Order Uber',
-        price: '20'
-      }
-    ],
+        title: 'Add breakfast ',
+        price: '50'
+      },
+      {
+        title: 'Rent a car',
+        price: '200'
+      }],
     'type': getRandomArrayElement(POINTS_TYPE),
+  }
+];
+
+const points = [
+  {
+    'type': 'taxi',
+    'offers': [1]
+  },
+  {
+    'type': 'flight',
+    'offers': [1]
+  },
+  {
+    'type': 'hotel',
+    'offers': [1]
+  },
+];
+
+const offers = [
+  {
+    'type': 'taxi',
+    'offers': [
+      {
+        'id': 1,
+        'title': 'Upgrade to a business class',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'Upgrade to a Van',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'Upgrade to a comfort class',
+        'price': 30
+      }
+    ]
+  },
+  {
+    'type': 'flight',
+    'offers': [
+      {
+        'id': 1,
+        'title': 'Upgrade to a business class',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'Switch to comfort',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'Add luggage',
+        'price': 25
+      }
+    ]
+  },
+  {
+    'type': 'hotel',
+    'offers': [
+      {
+        'id': 1,
+        'title': 'Upgrade to a business class',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'King size bed',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'Add separate bed',
+        'price': 25
+      }
+    ]
+  },
+];
+
+const mockDestinations = [
+  {
+    'id': 1,
+    'description': 'Leipzig, is a beautiful city, a true asian pearl.',
+    'name': 'Leipzig',
+    'pictures': [
+      {
+        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'description': 'Chamonix parliament building'
+      }
+    ]
+  },
+  {
+    'id': 2,
+    'description': 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.',
+    'name': 'Chamonix',
+    'pictures': [
+      {
+        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'description': 'Chamonix parliament building'
+      }
+    ]
+  },
+  {
+    'id': 3,
+    'description': 'Johannesburg, is a beautiful city with crowded streets.',
+    'name': 'Johannesburg',
+    'pictures': [
+      {
+        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'description': 'Chamonix parliament building'
+      }
+    ]
   }
 ];
 
