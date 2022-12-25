@@ -8,16 +8,7 @@ const mockPoints = [
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': '0',
-    'offers': [
-      {
-        title: 'Add breakfast ',
-        price: '50'
-      },
-      {
-        title: 'Rent a car',
-        price: '200'
-      }
-    ],
+    'offers': [1],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
 
@@ -27,12 +18,7 @@ const mockPoints = [
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Chamonix',
     'id': '0',
-    'offers': [
-      {
-        title: 'Rent a car',
-        price: '200'
-      }
-    ],
+    'offers': [1, 2, 3],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
@@ -41,16 +27,7 @@ const mockPoints = [
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': '0',
-    'offers': [
-      {
-        title: 'Switch to comfort',
-        price: '80'
-      },
-      {
-        title: 'Rent a car',
-        price: '200'
-      }
-    ],
+    'offers': [2],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
@@ -59,12 +36,7 @@ const mockPoints = [
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': '0',
-    'offers': [
-      {
-        title: 'Add luggage',
-        price: '50'
-      }
-    ],
+    'offers': [3],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
@@ -73,51 +45,43 @@ const mockPoints = [
     'dateTo': '2031-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': '0',
-    'offers': [
-      {
-        title: 'Add breakfast ',
-        price: '50'
-      },
-      {
-        title: 'Rent a car',
-        price: '200'
-      }],
+    'offers': [1, 2],
     'type': getRandomArrayElement(POINTS_TYPE),
   }
 ];
 
-const points = [
-  {
-    'type': 'taxi',
-    'offers': [1]
-  },
-  {
-    'type': 'flight',
-    'offers': [1]
-  },
-  {
-    'type': 'hotel',
-    'offers': [1]
-  },
-];
+// const points = [
+//   {
+//     'type': 'taxi',
+//     'offers': [1]
+//   },
+//   {
+//     'type': 'flight',
+//     'offers': [1]
+//   },
+//   {
+//     'type': 'hotel',
+//     'offers': [1]
+//   },
+// ];
 
-const offers = [
+const mockOffers = [
   {
     'type': 'taxi',
     'offers': [
       {
         'id': 1,
-        'title': 'Upgrade to a business class',
+        'title': 'taxi - offer 1',
         'price': 50
       },
       {
         'id': 2,
-        'title': 'Upgrade to a Van',
+        'title': 'taxi - offer 2',
         'price': 80
       },
       {
         'id': 3,
-        'title': 'Upgrade to a comfort class',
+        'title': 'taxi - offer 3',
         'price': 30
       }
     ]
@@ -127,74 +91,164 @@ const offers = [
     'offers': [
       {
         'id': 1,
-        'title': 'Upgrade to a business class',
+        'title': 'flight - offer 1',
         'price': 50
       },
       {
         'id': 2,
-        'title': 'Switch to comfort',
+        'title': 'flight - offer 2',
         'price': 80
       },
       {
         'id': 3,
-        'title': 'Add luggage',
+        'title': 'flight - offer 3',
         'price': 25
       }
     ]
   },
   {
-    'type': 'hotel',
+    'type': 'train',
     'offers': [
       {
         'id': 1,
-        'title': 'Upgrade to a business class',
+        'title': 'train - offer 1',
         'price': 50
       },
       {
         'id': 2,
-        'title': 'King size bed',
+        'title': 'train - offer 2',
         'price': 80
       },
       {
         'id': 3,
-        'title': 'Add separate bed',
+        'title': 'train - offer 3',
         'price': 25
       }
     ]
   },
-];
 
-const mockDestinations = [
   {
-    'id': 1,
-    'description': 'Leipzig, is a beautiful city, a true asian pearl.',
-    'name': 'Leipzig',
-    'pictures': [
+    'type': 'ship',
+    'offers': [
       {
-        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
-        'description': 'Chamonix parliament building'
+        'id': 1,
+        'title': 'ship - offer 1',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'ship - offer 2',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'ship - offer 3',
+        'price': 25
       }
     ]
   },
+
   {
-    'id': 2,
-    'description': 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.',
-    'name': 'Chamonix',
-    'pictures': [
+    'type': 'check-in',
+    'offers': [
       {
-        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
-        'description': 'Chamonix parliament building'
+        'id': 1,
+        'title': 'check-in - offer 1',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'check-in - offer 2',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'check-in - offer 3',
+        'price': 25
       }
     ]
   },
+
   {
-    'id': 3,
-    'description': 'Johannesburg, is a beautiful city with crowded streets.',
-    'name': 'Johannesburg',
-    'pictures': [
+    'type': 'bus',
+    'offers': [
       {
-        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
-        'description': 'Chamonix parliament building'
+        'id': 1,
+        'title': 'bus - offer 1',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'bus - offer 2',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'bus - offer 3',
+        'price': 25
+      }
+    ]
+  },
+
+  {
+    'type': 'drive',
+    'offers': [
+      {
+        'id': 1,
+        'title': 'drive - offer 1',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'drive - offer 2',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'drive - offer 3',
+        'price': 25
+      }
+    ]
+  },
+
+  {
+    'type': 'sightseeing',
+    'offers': [
+      {
+        'id': 1,
+        'title': 'sightseeing - offer 1',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'sightseeing - offer 2',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'sightseeing - offer 3',
+        'price': 25
+      }
+    ]
+  },
+
+  {
+    'type': 'restaurant',
+    'offers': [
+      {
+        'id': 1,
+        'title': 'restaurant - offer 1',
+        'price': 50
+      },
+      {
+        'id': 2,
+        'title': 'restaurant - offer 2',
+        'price': 80
+      },
+      {
+        'id': 3,
+        'title': 'restaurant - offer 3',
+        'price': 25
       }
     ]
   }
@@ -202,4 +256,4 @@ const mockDestinations = [
 
 const getRandomPoint = () => getRandomArrayElement(mockPoints);
 
-export {getRandomPoint};
+export {getRandomPoint, mockOffers};
