@@ -10,10 +10,8 @@ export default class EventsPresenter {
     this.eventsModel = eventsModel;
   }
 
-  getOfferByType(point) {
+  getOffersByType(point) {
     const pointType = mockOffers.find((offer) => offer.type === point.type);
-    // console.log(pointType);
-    // console.log(pointType.offers);
     return pointType.offers;
   }
 
@@ -31,7 +29,7 @@ export default class EventsPresenter {
         {
           ...this.events[i],
           offers : this.events[i].offers.map((id) => {
-            const offer = this.getOfferByType(this.events[i]).find(
+            const offer = this.getOffersByType(this.events[i]).find(
               (mockOffer) => mockOffer.id === id,
             );
             return offer || {};

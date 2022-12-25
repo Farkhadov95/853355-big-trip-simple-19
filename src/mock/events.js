@@ -50,21 +50,6 @@ const mockPoints = [
   }
 ];
 
-// const points = [
-//   {
-//     'type': 'taxi',
-//     'offers': [1]
-//   },
-//   {
-//     'type': 'flight',
-//     'offers': [1]
-//   },
-//   {
-//     'type': 'hotel',
-//     'offers': [1]
-//   },
-// ];
-
 const mockOffers = [
   {
     'type': 'taxi',
