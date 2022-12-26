@@ -7,8 +7,8 @@ const mockPoints = [
     'dateFrom': '2019-07-10T22:55:56.845Z',
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
-    'id': '0',
-    'offers': [1],
+    'id': 1,
+    'offers': [1, 2, 3],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
 
@@ -17,7 +17,7 @@ const mockPoints = [
     'dateFrom': '2011-07-10T22:55:56.845Z',
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Chamonix',
-    'id': '0',
+    'id': 2,
     'offers': [1, 2, 3],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
@@ -26,8 +26,8 @@ const mockPoints = [
     'dateFrom': '2013-07-10T22:55:56.845Z',
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Geneva',
-    'id': '0',
-    'offers': [2],
+    'id': 3,
+    'offers': [1, 2, 3],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
@@ -35,8 +35,8 @@ const mockPoints = [
     'dateFrom': '2016-07-10T22:55:56.845Z',
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Geneva',
-    'id': '0',
-    'offers': [3],
+    'id': 4,
+    'offers': [1, 2, 3],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
@@ -44,8 +44,8 @@ const mockPoints = [
     'dateFrom': '2022-07-10T22:55:56.845Z',
     'dateTo': '2031-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
-    'id': '0',
-    'offers': [1, 2],
+    'id': 5,
+    'offers': [1, 2, 3],
     'type': getRandomArrayElement(POINTS_TYPE),
   }
 ];

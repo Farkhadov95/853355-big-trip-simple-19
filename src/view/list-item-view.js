@@ -1,7 +1,6 @@
 import {createElement} from '../render.js';
 import { humanizeEventDueDate } from '../utils.js';
 
-
 function createListItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = event;
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
@@ -32,9 +31,9 @@ function createListItemTemplate(event) {
             <span class="event__offer-price">${offers[0].price}</span>
           </li>
           <li class="event__offer">
-            <span class="event__offer-title">${offers[0].title}</span>
+            <span class="event__offer-title">${offers[1].title}</span>
             &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offers[0].price}</span>
+            <span class="event__offer-price">${offers[1].price}</span>
           </li>
         </ul>
         <button class="event__rollup-btn" type="button">
