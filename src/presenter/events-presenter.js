@@ -24,12 +24,10 @@ export default class EventsPresenter {
   init() {
     this.events = [...this.eventsModel.getEvents()];
     const eventsListContainer = document.querySelector('.trip-events');
+    const eventList = new EventsListView();
 
-    render(new EventsListView(), eventsListContainer);
-
-    const eventsList = document.querySelector('.trip-events__list');
-
-    render(new AddPointView(), eventsList);
+    render(eventList, eventsListContainer);
+    render(new AddPointView(), eventList.element);
 
     for (const event of this.events) {
       render(new ListItemView(
@@ -43,7 +41,7 @@ export default class EventsPresenter {
           }
           )
         }
-      ), eventsList);
+      ), eventList.element);
     }
 
   }
