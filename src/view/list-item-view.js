@@ -1,35 +1,39 @@
 import {createElement} from '../render.js';
+import { humanizeEventDueDate } from '../utils.js';
 
-function createListItemTemplate() {
+function createListItemTemplate(event) {
+  const {basePrice, dateFrom, dateTo, destination, offers, type} = event;
+  const formattedDateFrom = humanizeEventDueDate(dateFrom);
+  const formattedDateTo = humanizeEventDueDate(dateTo);
   return (
     `<li class="trip-events__item">
       <div class="event">
         <time class="event__date" datetime="2019-03-19">MAR 19</time>
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/sightseeing.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">Sightseeing Chamonix</h3>
+        <h3 class="event__title">${type} ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-19T11:20">14:20</time>
+            <time class="event__start-time" datetime="2019-03-19T11:20">${formattedDateFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-19T13:00">13:00</time>
+            <time class="event__end-time" datetime="2019-03-19T13:00">${formattedDateTo}</time>
           </p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">50</span>
+          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
           <li class="event__offer">
-            <span class="event__offer-title">Book tickets</span>
+            <span class="event__offer-title">${offers[0].title}</span>
             &plus;&euro;&nbsp;
-            <span class="event__offer-price">40</span>
+            <span class="event__offer-price">${offers[0].price}</span>
           </li>
           <li class="event__offer">
-            <span class="event__offer-title">Lunch in city</span>
+            <span class="event__offer-title">${offers[1].title}</span>
             &plus;&euro;&nbsp;
-            <span class="event__offer-price">30</span>
+            <span class="event__offer-price">${offers[1].price}</span>
           </li>
         </ul>
         <button class="event__rollup-btn" type="button">
@@ -41,8 +45,12 @@ function createListItemTemplate() {
 }
 
 export default class ListItemView {
+  constructor(event) {
+    this.event = event;
+  }
+
   getTemplate() {
-    return createListItemTemplate();
+    return createListItemTemplate(this.event);
   }
 
   getElement() {
