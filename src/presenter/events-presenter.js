@@ -23,10 +23,9 @@ export default class EventsPresenter {
 
   init() {
     this.events = [...this.eventsModel.getEvents()];
-    const eventsListContainer = document.querySelector('.trip-events');
     const eventList = new EventsListView();
 
-    render(eventList, eventsListContainer);
+    render(eventList, this.eventsListContainer);
     render(new AddPointView(), eventList.element);
 
     for (const event of this.events) {
