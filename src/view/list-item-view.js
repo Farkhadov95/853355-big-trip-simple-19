@@ -3,6 +3,7 @@ import { humanizeEventDueDate } from '../utils.js';
 
 function createListItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = event;
+
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
   return (
@@ -64,4 +65,5 @@ export default class ListItemView {
     this.element = null;
   }
 }
+
 

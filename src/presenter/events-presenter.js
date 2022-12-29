@@ -1,9 +1,12 @@
-import AddPointView from '../view/add-point-view.js';
 import ListItemView from '../view/list-item-view.js';
+import EditEventView from '../view/edit-event-view.js';
 import {render} from '../render.js';
 import { mockOffers } from '../mock/events.js';
 import EventsListView from '../view/events-list-view.js';
+
+
 export default class EventsPresenter {
+  #eventListComponent = new EventsListView();
 
   constructor({eventsListContainer, eventsModel}) {
     this.eventsListContainer = eventsListContainer;
@@ -23,13 +26,11 @@ export default class EventsPresenter {
 
   init() {
     this.events = [...this.eventsModel.getEvents()];
-    const eventList = new EventsListView();
 
-    render(eventList, this.eventsListContainer);
-    render(new AddPointView(), eventList.element);
+    render(this.#eventListComponent, this.eventsListContainer);
 
     for (const event of this.events) {
-      render(new ListItemView(
+      this.#renderListItem((
         {
           ...event,
           offers: event.offers.map((id) => {
@@ -40,8 +41,46 @@ export default class EventsPresenter {
           }
           )
         }
-      ), eventList.element);
+      ), this.#eventListComponent.element);
     }
+  }
 
+  #renderListItem(point) {
+    const listItemComponent = new ListItemView(point);
+    const editComponent = new EditEventView(point);
+
+    const replaceEventToEdit = () => {
+      this.#eventListComponent.getElement().replaceChild(editComponent.getElement(), listItemComponent.getElement());
+    };
+
+    const replaceEditToEvent = () => {
+      this.#eventListComponent.getElement().replaceChild(listItemComponent.getElement(), editComponent.getElement());
+    };
+
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        replaceEditToEvent();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    listItemComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceEventToEdit();
+      document.addEventListener('keydown', escKeyDownHandler);
+    });
+
+    editComponent.getElement().addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceEditToEvent();
+      document.removeEventListener('keydown', escKeyDownHandler);
+    });
+
+    editComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceEditToEvent();
+      document.removeEventListener('keydown', escKeyDownHandler);
+    });
+
+    render(listItemComponent, this.#eventListComponent.element);
   }
 }
