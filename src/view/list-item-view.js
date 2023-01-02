@@ -65,5 +65,3 @@ export default class ListItemView {
     this.element = null;
   }
 }
-
-
