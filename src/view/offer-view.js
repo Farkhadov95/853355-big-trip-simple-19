@@ -1,12 +1,15 @@
-import { createElement } from '../render.js';
+import { createElement, render} from '../render.js';
 
 function createOfferTemplate(offer) {
   return (
-    `<li class="event__offer">
+    `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" checked>
+      <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
-    </li>`
+      </label>
+    </div>`
   );
 }
 
@@ -28,6 +31,13 @@ export default class OfferView {
 
   removeElement() {
     this.element = null;
+  }
+
+  renderOffers(offers, container) {
+    const offersContainer = container.querySelector('.event__available-offers');
+    offers.forEach((offer) => {
+      render(new OfferView(offer), offersContainer);
+    });
   }
 
 

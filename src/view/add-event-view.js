@@ -1,10 +1,8 @@
 import {createElement} from '../render.js';
-import { humanizeEventDueDate } from '../utils.js';
+import OfferView from './offer-view.js';
+import { mockOffers } from '../mock/events.js';
 
-function createEditItemTemplate(event) {
-  const {basePrice, dateFrom, dateTo, destination, offers, type} = event;
-  const formattedDateFrom = humanizeEventDueDate(dateFrom);
-  const formattedDateTo = humanizeEventDueDate(dateTo);
+function createEditItemTemplate() {
   return (
     `<li class="trip-events__item">
         <form class="event event--edit" action="#" method="post">
@@ -70,9 +68,9 @@ function createEditItemTemplate(event) {
 
             <div class="event__field-group  event__field-group--destination">
               <label class="event__label  event__type-output" for="event-destination-1">
-              ${type}
+                Flight
               </label>
-              <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+              <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
               <datalist id="destination-list-1">
                 <option value="Amsterdam"></option>
                 <option value="Geneva"></option>
@@ -82,10 +80,10 @@ function createEditItemTemplate(event) {
 
             <div class="event__field-group  event__field-group--time">
               <label class="visually-hidden" for="event-start-time-1">From</label>
-              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedDateFrom}">
+              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
               &mdash;
               <label class="visually-hidden" for="event-end-time-1">To</label>
-              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedDateTo}">
+              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
             </div>
 
             <div class="event__field-group  event__field-group--price">
@@ -93,7 +91,7 @@ function createEditItemTemplate(event) {
                 <span class="visually-hidden">Price</span>
                 &euro;
               </label>
-              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
             </div>
 
             <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -104,50 +102,7 @@ function createEditItemTemplate(event) {
               <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
               <div class="event__available-offers">
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-                  <label class="event__offer-label" for="event-offer-luggage-1">
-                    <span class="event__offer-title">${offers[0].title}</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">${offers[0].price}</span>
-                  </label>
-                </div>
-
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
-                  <label class="event__offer-label" for="event-offer-comfort-1">
-                    <span class="event__offer-title">${offers[1].title}</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">${offers[1].price}</span>
-                  </label>
-                </div>
-
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-                  <label class="event__offer-label" for="event-offer-meal-1">
-                    <span class="event__offer-title">Add meal</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">15</span>
-                  </label>
-                </div>
-
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
-                  <label class="event__offer-label" for="event-offer-seats-1">
-                    <span class="event__offer-title">Choose seats</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">5</span>
-                  </label>
-                </div>
-
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
-                  <label class="event__offer-label" for="event-offer-train-1">
-                    <span class="event__offer-title">Travel by train</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">40</span>
-                  </label>
-                </div>
+                <!-- Offers -->
               </div>
             </section>
 
@@ -172,17 +127,20 @@ function createEditItemTemplate(event) {
 }
 
 export default class AddEventView {
-  constructor(event) {
-    this.event = event;
+  getTemplate() {
+    return createEditItemTemplate();
   }
 
-  getTemplate() {
-    return createEditItemTemplate(this.event);
+  getOffers(element) {
+    const selectedType = element.querySelector('input[name="event-type"]:checked').value;
+    const offersOnSelectedType = mockOffers.find((offer) => offer.type === selectedType).offers;
+    new OfferView().renderOffers(offersOnSelectedType, element);
   }
 
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
+      this.getOffers(this.element);
     }
     return this.element;
   }
