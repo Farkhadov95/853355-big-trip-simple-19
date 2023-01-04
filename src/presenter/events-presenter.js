@@ -4,10 +4,12 @@ import {render, RenderPosition} from '../render.js';
 import EventsListView from '../view/events-list-view.js';
 import AddEventView from '../view/add-event-view.js';
 import { getOffersByType } from '../utils.js';
+import EmptyListView from '../view/list-empty-view.js';
 
 
 export default class EventsPresenter {
   #eventListComponent = new EventsListView();
+  #emptyList = new EmptyListView();
 
   constructor({eventsListContainer, eventsModel}) {
     this.eventsListContainer = eventsListContainer;
@@ -15,7 +17,8 @@ export default class EventsPresenter {
   }
 
   init() {
-    this.events = [...this.eventsModel.getEvents()];
+    // this.events = [...this.eventsModel.getEvents()];
+    this.events = [];
 
     render(this.#eventListComponent, this.eventsListContainer);
 
@@ -24,19 +27,23 @@ export default class EventsPresenter {
       render(new AddEventView(), this.#eventListComponent.getElement(), RenderPosition.AFTERBEGIN);
     });
 
-    for (const event of this.events) {
-      this.#renderListItem((
-        {
-          ...event,
-          offers: event.offers.map((id) => {
-            const offer = getOffersByType(event).find(
-              (mockOffer) => mockOffer.id === id,
-            );
-            return offer || {};
+    if (this.events.length === 0) {
+      render(this.#emptyList, this.#eventListComponent.getElement());
+    } else {
+      for (const event of this.events) {
+        this.#renderListItem((
+          {
+            ...event,
+            offers: event.offers.map((id) => {
+              const offer = getOffersByType(event).find(
+                (mockOffer) => mockOffer.id === id,
+              );
+              return offer || {};
+            }
+            )
           }
-          )
-        }
-      ), this.#eventListComponent.getElement());
+        ), this.#eventListComponent.getElement());
+      }
     }
   }
 
