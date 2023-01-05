@@ -105,24 +105,27 @@ function createEditItemTemplate(event) {
 }
 
 export default class EditEventView {
+  #element = null;
+  #event = null;
+
   constructor(event) {
-    this.event = event;
+    this.#event = event;
   }
 
-  getTemplate() {
-    return createEditItemTemplate(this.event);
+  get template() {
+    return createEditItemTemplate(this.#event);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-      new OfferView().renderOffers(this.event.offers, this.element);
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+      new OfferView().renderOffers(this.#event.offers, this.#element);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
 

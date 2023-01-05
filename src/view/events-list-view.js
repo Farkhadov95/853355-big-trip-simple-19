@@ -5,19 +5,21 @@ function createEventsListTemplate() {
 }
 
 export default class EventsListView {
+  #element = null;
+
   getTemplate() {
     return createEventsListTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.getTemplate());
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 
 

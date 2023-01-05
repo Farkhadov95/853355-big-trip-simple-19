@@ -14,23 +14,26 @@ function createOfferTemplate(offer) {
 }
 
 export default class OfferView {
+  #element = null;
+  #offer = null;
+
   constructor(offer) {
-    this.offer = offer;
+    this.#offer = offer;
   }
 
-  getTemplate() {
-    return createOfferTemplate(this.offer);
+  get template() {
+    return createOfferTemplate(this.#offer);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 
   renderOffers(offers, container) {

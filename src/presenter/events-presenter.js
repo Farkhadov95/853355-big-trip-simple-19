@@ -11,23 +11,26 @@ export default class EventsPresenter {
   #eventListComponent = new EventsListView();
   #emptyList = new EmptyListView();
 
+  #eventsListContainer = null;
+  #eventsModel = null;
+
   constructor({eventsListContainer, eventsModel}) {
-    this.eventsListContainer = eventsListContainer;
-    this.eventsModel = eventsModel;
+    this.#eventsListContainer = eventsListContainer;
+    this.#eventsModel = eventsModel;
   }
 
   init() {
-    this.events = [...this.eventsModel.getEvents()];
+    this.events = [...this.#eventsModel.events];
 
-    render(this.#eventListComponent, this.eventsListContainer);
+    render(this.#eventListComponent, this.#eventsListContainer);
 
     const addNewEventButton = document.querySelector('.trip-main__event-add-btn');
     addNewEventButton.addEventListener('click', () => {
-      render(new AddEventView(), this.#eventListComponent.getElement(), RenderPosition.AFTERBEGIN);
+      render(new AddEventView(), this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
     });
 
     if (this.events.length === 0) {
-      render(this.#emptyList, this.#eventListComponent.getElement());
+      render(this.#emptyList, this.#eventListComponent.element);
     } else {
       for (const event of this.events) {
         this.#renderListItem((
@@ -41,7 +44,7 @@ export default class EventsPresenter {
             }
             )
           }
-        ), this.#eventListComponent.getElement());
+        ), this.#eventListComponent.element);
       }
     }
   }
@@ -51,11 +54,11 @@ export default class EventsPresenter {
     const editComponent = new EditEventView(point);
 
     const replaceEventToEdit = () => {
-      this.#eventListComponent.getElement().replaceChild(editComponent.getElement(), listItemComponent.getElement());
+      this.#eventListComponent.element.replaceChild(editComponent.element, listItemComponent.element);
     };
 
     const replaceEditToEvent = () => {
-      this.#eventListComponent.getElement().replaceChild(listItemComponent.getElement(), editComponent.getElement());
+      this.#eventListComponent.element.replaceChild(listItemComponent.element, editComponent.element);
     };
 
     const escKeyDownHandler = (evt) => {
@@ -66,18 +69,18 @@ export default class EventsPresenter {
       }
     };
 
-    listItemComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    listItemComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       replaceEventToEdit();
       document.addEventListener('keydown', escKeyDownHandler);
     });
 
-    editComponent.getElement().addEventListener('submit', (evt) => {
+    editComponent.element.addEventListener('submit', (evt) => {
       evt.preventDefault();
       replaceEditToEvent();
       document.removeEventListener('keydown', escKeyDownHandler);
     });
 
-    editComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    editComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       replaceEditToEvent();
       document.removeEventListener('keydown', escKeyDownHandler);
     });

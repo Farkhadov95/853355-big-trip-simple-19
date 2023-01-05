@@ -127,7 +127,9 @@ function createEditItemTemplate() {
 }
 
 export default class AddEventView {
-  getTemplate() {
+  #element = null;
+
+  get template() {
     return createEditItemTemplate();
   }
 
@@ -137,16 +139,16 @@ export default class AddEventView {
     new OfferView().renderOffers(offersOnSelectedType, element);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-      this.getOffers(this.element);
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+      this.getOffers(this.#element);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
 
