@@ -2,7 +2,7 @@ import {createElement} from '../render.js';
 import OfferView from './offer-view.js';
 import { mockOffers } from '../mock/events.js';
 
-function createEditItemTemplate() {
+function createAddItemTemplate() {
   return (
     `<li class="trip-events__item">
         <form class="event event--edit" action="#" method="post">
@@ -130,7 +130,7 @@ export default class AddEventView {
   #element = null;
 
   get template() {
-    return createEditItemTemplate();
+    return createAddItemTemplate();
   }
 
   getOffers(element) {

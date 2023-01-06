@@ -30,23 +30,24 @@ export default class EventsPresenter {
     });
 
     if (this.events.length === 0) {
-      render(this.#emptyList, this.#eventListComponent.element);
-    } else {
-      for (const event of this.events) {
-        this.#renderListItem((
-          {
-            ...event,
-            offers: event.offers.map((id) => {
-              const offer = getOffersByType(event).find(
-                (mockOffer) => mockOffer.id === id,
-              );
-              return offer || {};
-            }
-            )
-          }
-        ), this.#eventListComponent.element);
-      }
+      return render(this.#emptyList, this.#eventListComponent.element);
     }
+
+    for (const event of this.events) {
+      this.#renderListItem((
+        {
+          ...event,
+          offers: event.offers.map((id) => {
+            const offer = getOffersByType(event).find(
+              (mockOffer) => mockOffer.id === id,
+            );
+            return offer || {};
+          }
+          )
+        }
+      ), this.#eventListComponent.element);
+    }
+
   }
 
   #renderListItem(point) {

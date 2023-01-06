@@ -1,11 +1,23 @@
 import {createElement} from '../render.js';
 import { humanizeEventDueDate } from '../utils.js';
-import OfferView from './offer-view.js';
 
 function createEditItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, type} = event;
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
+
+  const offersTemplate = event.offers.map((offer) => (
+    `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" checked>
+      <label class="event__offer-label" for="event-offer-${offer.id}">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>`
+  )).join('');
+
+
   return (
     `<form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -93,6 +105,7 @@ function createEditItemTemplate(event) {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
           <!-- Offers -->
+          ${offersTemplate}
           </div>
         </section>
         <section class="event__section  event__section--destination">
@@ -119,7 +132,6 @@ export default class EditEventView {
   get element() {
     if (!this.#element) {
       this.#element = createElement(this.template);
-      new OfferView().renderOffers(this.#event.offers, this.#element);
     }
     return this.#element;
   }
@@ -128,5 +140,3 @@ export default class EditEventView {
     this.#element = null;
   }
 }
-
-
