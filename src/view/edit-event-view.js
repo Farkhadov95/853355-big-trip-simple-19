@@ -17,7 +17,6 @@ function createEditItemTemplate(event) {
     </div>`
   )).join('');
 
-
   return (
     `<form class="event event--edit" action="#" method="post">
       <header class="event__header">

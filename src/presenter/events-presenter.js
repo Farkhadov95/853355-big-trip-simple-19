@@ -26,8 +26,9 @@ export default class EventsPresenter {
 
     const addNewEventButton = document.querySelector('.trip-main__event-add-btn');
     addNewEventButton.addEventListener('click', () => {
-      render(new AddEventView(), this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
-    });
+      this.#renderAddEvent(addNewEventButton);
+      addNewEventButton.disabled = true;
+    } );
 
     if (this.events.length === 0) {
       return render(this.#emptyList, this.#eventListComponent.element);
@@ -87,5 +88,16 @@ export default class EventsPresenter {
     });
 
     render(listItemComponent, this.#eventListComponent.element);
+  }
+
+  #renderAddEvent(addButton) {
+    const addEventComponent = new AddEventView();
+    const cancelButton = addEventComponent.element.querySelector('.event__reset-btn');
+
+    render(addEventComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+    cancelButton.addEventListener('click', () => {
+      addEventComponent.element.remove();
+      addButton.disabled = false;
+    });
   }
 }

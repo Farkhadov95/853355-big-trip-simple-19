@@ -22,5 +22,4 @@ export default class EmptyListView {
     this.#element = null;
   }
 
-
 }

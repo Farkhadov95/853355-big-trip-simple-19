@@ -3,7 +3,7 @@ import { createElement, render} from '../render.js';
 function createOfferTemplate(offer) {
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" checked>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}">
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -37,11 +37,15 @@ export default class OfferView {
   }
 
   renderOffers(offers, container) {
+    const offerTitle = container.querySelector('.event__section--offers');
     const offersContainer = container.querySelector('.event__available-offers');
+    if (offers.length === 0) {
+      offerTitle.remove();
+      return;
+    }
     offers.forEach((offer) => {
       render(new OfferView(offer), offersContainer);
     });
   }
-
 
 }
