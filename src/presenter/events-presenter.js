@@ -26,6 +26,10 @@ export default class EventsPresenter {
 
     const addNewEventButton = document.querySelector('.trip-main__event-add-btn');
     addNewEventButton.addEventListener('click', () => {
+      const emptyListMessage = document.querySelector('.trip-events__msg');
+      if (document.contains(emptyListMessage)) {
+        emptyListMessage.remove();
+      }
       this.#renderAddEvent(addNewEventButton);
       addNewEventButton.disabled = true;
     } );

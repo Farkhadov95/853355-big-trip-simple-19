@@ -1,8 +1,25 @@
 import {createElement} from '../render.js';
-import OfferView from './offer-view.js';
 import { mockOffers } from '../mock/events.js';
 
 function createAddItemTemplate() {
+
+  function getOffers(selectedType = 'flight') {
+    const offersOnSelectedType = mockOffers.find((offer) => offer.type === selectedType).offers;
+
+    const allOffers = offersOnSelectedType.map((offer) => (
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}">
+        <label class="event__offer-label" for="event-offer-${offer.id}">
+          <span class="event__offer-title">${offer.title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+        </label>
+      </div>`
+    )).join('');
+
+    return allOffers;
+  }
+
   return (
     `<li class="trip-events__item">
         <form class="event event--edit" action="#" method="post">
@@ -103,6 +120,7 @@ function createAddItemTemplate() {
 
               <div class="event__available-offers">
                 <!-- Offers -->
+                ${getOffers()}
               </div>
             </section>
 
@@ -133,16 +151,19 @@ export default class AddEventView {
     return createAddItemTemplate();
   }
 
-  getOffers(element) {
+  checkOffersLength(element) {
+    const offersSection = element.querySelector('.event__section--offers');
     const selectedType = element.querySelector('input[name="event-type"]:checked').value;
     const offersOnSelectedType = mockOffers.find((offer) => offer.type === selectedType).offers;
-    new OfferView().renderOffers(offersOnSelectedType, element);
+    if (offersOnSelectedType.length === 0) {
+      offersSection.remove();
+    }
   }
 
   get element() {
     if (!this.#element) {
       this.#element = createElement(this.template);
-      this.getOffers(this.#element);
+      this.checkOffersLength(this.#element);
     }
     return this.#element;
   }
