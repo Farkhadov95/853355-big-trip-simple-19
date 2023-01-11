@@ -26,13 +26,12 @@ render(eventListComponent, eventsListContainer);
 
 eventsPresenter.init();
 
-function renderAddEvent(addButton) {
+function renderAddEvent() {
   const cancelButton = addEventComponent.element.querySelector('.event__reset-btn');
   render(addEventComponent, eventListComponent.element, RenderPosition.AFTERBEGIN);
 
   cancelButton.addEventListener('click', () => {
     addEventComponent.element.remove();
-    addButton.disabled = false;
   });
 }
 
@@ -42,5 +41,4 @@ addNewEventButton.addEventListener('click', () => {
     emptyListMessage.remove();
   }
   renderAddEvent(addNewEventButton);
-  addNewEventButton.disabled = true;
 });
