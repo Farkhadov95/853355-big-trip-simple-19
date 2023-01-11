@@ -1,8 +1,7 @@
 import ListItemView from '../view/list-item-view.js';
 import EditEventView from '../view/edit-event-view.js';
-import {render, RenderPosition} from '../render.js';
+import { render } from '../render.js';
 import EventsListView from '../view/events-list-view.js';
-import AddEventView from '../view/add-event-view.js';
 import { getOffersByType } from '../utils.js';
 import EmptyListView from '../view/list-empty-view.js';
 
@@ -24,18 +23,9 @@ export default class EventsPresenter {
 
     render(this.#eventListComponent, this.#eventsListContainer);
 
-    const addNewEventButton = document.querySelector('.trip-main__event-add-btn');
-    addNewEventButton.addEventListener('click', () => {
-      const emptyListMessage = document.querySelector('.trip-events__msg');
-      if (document.contains(emptyListMessage)) {
-        emptyListMessage.remove();
-      }
-      this.#renderAddEvent(addNewEventButton);
-      addNewEventButton.disabled = true;
-    } );
-
     if (this.events.length === 0) {
-      return render(this.#emptyList, this.#eventListComponent.element);
+      render(this.#emptyList, this.#eventListComponent.element);
+      return;
     }
 
     for (const event of this.events) {
@@ -92,16 +82,5 @@ export default class EventsPresenter {
     });
 
     render(listItemComponent, this.#eventListComponent.element);
-  }
-
-  #renderAddEvent(addButton) {
-    const addEventComponent = new AddEventView();
-    const cancelButton = addEventComponent.element.querySelector('.event__reset-btn');
-
-    render(addEventComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
-    cancelButton.addEventListener('click', () => {
-      addEventComponent.element.remove();
-      addButton.disabled = false;
-    });
   }
 }

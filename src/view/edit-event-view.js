@@ -1,14 +1,25 @@
 import {createElement} from '../render.js';
 import { humanizeEventDueDate } from '../utils.js';
+import { mockDestinations, mockOffers } from '../mock/events.js';
 
 function createEditItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, type} = event;
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
 
-  const offersTemplate = event.offers.map((offer) => (
+  const destinationDescription = mockDestinations.find((mock) => mock.name === destination).description;
+
+  const offers = event.offers.map((offer) => {
+    const checked = !!mockOffers.find((o) => o.id === offer.id);
+    return {
+      ...offer,
+      checked: checked,
+    };
+  });
+
+  const offersTemplate = offers.map((offer) => (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" checked>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" ${offer.checked ? 'checked' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -109,7 +120,7 @@ function createEditItemTemplate(event) {
         </section>
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination} is a beautiful place.</p>
+          <p class="event__destination-description">${destinationDescription}</p>
         </section>
       </section>
     </form>`
