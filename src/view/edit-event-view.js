@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
-import { humanizeEventDueDate } from '../utils.js';
-import { mockDestinations, mockOffers } from '../mock/events.js';
+import { getMockOffersByType, humanizeEventDueDate } from '../utils.js';
+import { mockDestinations } from '../mock/events.js';
 
 function createEditItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, type} = event;
@@ -8,16 +8,16 @@ function createEditItemTemplate(event) {
   const formattedDateTo = humanizeEventDueDate(dateTo);
 
   const destinationDescription = mockDestinations.find((mock) => mock.name === destination).description;
+  const mockOffersByType = getMockOffersByType(event);
 
-  const offers = event.offers.map((offer) => {
-    const checked = !!mockOffers.find((o) => o.id === offer.id);
-    return {
-      ...offer,
-      checked: checked,
-    };
-  });
+  for (let i = 0; i < event.offers.length; i++) {
+    const selectedOfferIndex = mockOffersByType.indexOf(event.offers[i]);
+    if (selectedOfferIndex !== -1) {
+      mockOffersByType[selectedOfferIndex].checked = true;
+    }
+  }
 
-  const offersTemplate = offers.map((offer) => (
+  const offersTemplate = mockOffersByType.map((offer) => (
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" ${offer.checked ? 'checked' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.id}">

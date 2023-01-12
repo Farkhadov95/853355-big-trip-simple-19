@@ -6,6 +6,15 @@ function createListItemTemplate(event) {
 
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
+
+  const offersTemplate = offers.slice(0, 2).map((offer) => (
+    `<li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </li>`
+  )).join('');
+
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -26,16 +35,7 @@ function createListItemTemplate(event) {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          <li class="event__offer">
-            <span class="event__offer-title">${offers[0].title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offers[0].price}</span>
-          </li>
-          <li class="event__offer">
-            <span class="event__offer-title">${offers[1].title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offers[1].price}</span>
-          </li>
+          ${offersTemplate}
         </ul>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>

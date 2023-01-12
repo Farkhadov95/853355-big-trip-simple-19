@@ -2,9 +2,8 @@ import ListItemView from '../view/list-item-view.js';
 import EditEventView from '../view/edit-event-view.js';
 import { render } from '../render.js';
 import EventsListView from '../view/events-list-view.js';
-import { getOffersByType } from '../utils.js';
+import { getMockOffersByType } from '../utils.js';
 import EmptyListView from '../view/list-empty-view.js';
-
 
 export default class EventsPresenter {
   #eventListComponent = new EventsListView();
@@ -29,20 +28,18 @@ export default class EventsPresenter {
     }
 
     for (const event of this.events) {
-      this.#renderListItem((
-        {
-          ...event,
-          offers: event.offers.map((id) => {
-            const offer = getOffersByType(event).find(
-              (mockOffer) => mockOffer.id === id,
-            );
-            return offer || {};
-          }
-          )
-        }
-      ), this.#eventListComponent.element);
-    }
+      const eventsWithSelectedOffers = {
+        ...event,
+        offers: event.offers.map((id) => {
+          const offer = getMockOffersByType(event).find(
+            (mockOffer) => mockOffer.id === id,
+          );
+          return offer;
+        }),
+      };
 
+      this.#renderListItem((eventsWithSelectedOffers), this.#eventListComponent.element);
+    }
   }
 
   #renderListItem(point) {

@@ -12,9 +12,9 @@ function humanizeEventDueDate(dueDate) {
   return dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
 }
 
-function getOffersByType(point) {
-  const offerType = mockOffers.find((offer) => offer.type === point.type);
-  return offerType.offers;
+function getMockOffersByType(point) {
+  const offerType = mockOffers.find((offer) => offer.type === point.type).offers;
+  return offerType;
 }
 
-export {getRandomArrayElement, humanizeEventDueDate, getOffersByType};
+export {getRandomArrayElement, humanizeEventDueDate, getMockOffersByType};

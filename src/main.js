@@ -40,5 +40,5 @@ addNewEventButton.addEventListener('click', () => {
   if (document.contains(emptyListMessage)) {
     emptyListMessage.remove();
   }
-  renderAddEvent(addNewEventButton);
+  renderAddEvent();
 });
