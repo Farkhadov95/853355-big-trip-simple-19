@@ -10,16 +10,9 @@ function createEditItemTemplate(event) {
   const destinationDescription = mockDestinations.find((mock) => mock.name === destination).description;
   const mockOffersByType = getMockOffersByType(event);
 
-  for (let i = 0; i < event.offers.length; i++) {
-    const selectedOfferIndex = mockOffersByType.indexOf(event.offers[i]);
-    if (selectedOfferIndex !== -1) {
-      mockOffersByType[selectedOfferIndex].checked = true;
-    }
-  }
-
   const offersTemplate = mockOffersByType.map((offer) => (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" ${offer.checked ? 'checked' : ''}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" ${event.offers.includes(offer) ? 'checked' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
