@@ -1,6 +1,22 @@
 import {createElement} from '../render.js';
+import { mockOffers } from '../mock/events.js';
 
-function createAddPointTemplate() {
+function createOffersTemplate(selectedType = 'flight') {
+  const offersOnSelectedType = mockOffers.find((offer) => offer.type === selectedType).offers;
+
+  return offersOnSelectedType.map((offer) => (
+    `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}">
+      <label class="event__offer-label" for="event-offer-${offer.id}">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>`
+  )).join('');
+}
+
+function createAddItemTemplate() {
   return (
     `<li class="trip-events__item">
         <form class="event event--edit" action="#" method="post">
@@ -100,50 +116,8 @@ function createAddPointTemplate() {
               <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
               <div class="event__available-offers">
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-                  <label class="event__offer-label" for="event-offer-luggage-1">
-                    <span class="event__offer-title">Add luggage</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">30</span>
-                  </label>
-                </div>
-
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
-                  <label class="event__offer-label" for="event-offer-comfort-1">
-                    <span class="event__offer-title">Switch to comfort class</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">100</span>
-                  </label>
-                </div>
-
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-                  <label class="event__offer-label" for="event-offer-meal-1">
-                    <span class="event__offer-title">Add meal</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">15</span>
-                  </label>
-                </div>
-
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
-                  <label class="event__offer-label" for="event-offer-seats-1">
-                    <span class="event__offer-title">Choose seats</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">5</span>
-                  </label>
-                </div>
-
-                <div class="event__offer-selector">
-                  <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
-                  <label class="event__offer-label" for="event-offer-train-1">
-                    <span class="event__offer-title">Travel by train</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">40</span>
-                  </label>
-                </div>
+                <!-- Offers -->
+                ${createOffersTemplate()}
               </div>
             </section>
 
@@ -167,20 +141,31 @@ function createAddPointTemplate() {
   );
 }
 
-export default class AddPointView {
-  getTemplate() {
-    return createAddPointTemplate();
+export default class AddEventView {
+  #element = null;
+
+  get template() {
+    return createAddItemTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  checkOffersLength(element) {
+    const offersSection = element.querySelector('.event__section--offers');
+    const selectedType = element.querySelector('input[name="event-type"]:checked').value;
+    const offersOnSelectedType = mockOffers.find((offer) => offer.type === selectedType).offers;
+    if (offersOnSelectedType.length === 0) {
+      offersSection.remove();
     }
-    return this.element;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+      this.checkOffersLength(this.#element);
+    }
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
-

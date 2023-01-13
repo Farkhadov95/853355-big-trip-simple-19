@@ -8,7 +8,7 @@ const mockPoints = [
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': 1,
-    'offers': [1, 2, 3],
+    'offers': [1, 2],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
 
@@ -18,7 +18,7 @@ const mockPoints = [
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Chamonix',
     'id': 2,
-    'offers': [1, 2, 3],
+    'offers': [1, 2],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
@@ -27,7 +27,7 @@ const mockPoints = [
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': 3,
-    'offers': [1, 2, 3],
+    'offers': [1],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
@@ -45,7 +45,7 @@ const mockPoints = [
     'dateTo': '2031-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': 5,
-    'offers': [1, 2, 3],
+    'offers': [1],
     'type': getRandomArrayElement(POINTS_TYPE),
   }
 ];
@@ -239,6 +239,43 @@ const mockOffers = [
   }
 ];
 
+const mockDestinations = [
+  {
+    'id': 1,
+    'description': 'Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.',
+    'name': 'Geneva',
+    'pictures': [
+      {
+        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'description': 'Geneva is a gorgeous city, one that’s filled with mountains of chocolate.'
+      }
+    ]
+  },
+  {
+    'id': 2,
+    'description': 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.',
+    'name': 'Chamonix',
+    'pictures': [
+      {
+        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'description': 'Chamonix parliament building'
+      }
+    ]
+  },
+  {
+    'id': 3,
+    'description': 'Amsterdam is known for its artistic heritage, elaborate canal system and narrow houses with gabled facades, legacies of the city’s 17th-century Golden Age.',
+    'name': 'Amsterdam',
+    'pictures': [
+      {
+        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'description': 'View of the city centre looking southwest from the Oosterdokskade'
+      }
+    ]
+  }
+];
+
+
 const getRandomPoint = () => getRandomArrayElement(mockPoints);
 
-export {getRandomPoint, mockOffers};
+export {getRandomPoint, mockOffers, mockDestinations};
