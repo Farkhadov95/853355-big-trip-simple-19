@@ -4,16 +4,26 @@ import { mockOffers } from '../mock/events.js';
 function createOffersTemplate(selectedType = 'flight') {
   const offersOnSelectedType = mockOffers.find((offer) => offer.type === selectedType).offers;
 
-  return offersOnSelectedType.map((offer) => (
+  if (offersOnSelectedType.length !== 0) {
+    return `
+    <section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      <!-- Offers -->
+    ${offersOnSelectedType.map((offer) => (
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}">
-      <label class="event__offer-label" for="event-offer-${offer.id}">
-        <span class="event__offer-title">${offer.title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`
-  )).join('');
+        <label class="event__offer-label" for="event-offer-${offer.id}">
+          <span class="event__offer-title">${offer.title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+        </label>
+      </div>`
+  )).join('')}
+    </div>
+    </section>`;
+  }
+  return '';
 }
 
 function createAddItemTemplate() {
@@ -112,15 +122,7 @@ function createAddItemTemplate() {
             <button class="event__reset-btn" type="reset">Cancel</button>
           </header>
           <section class="event__details">
-            <section class="event__section  event__section--offers">
-              <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-              <div class="event__available-offers">
-                <!-- Offers -->
-                ${createOffersTemplate()}
-              </div>
-            </section>
-
+              ${createOffersTemplate()}
             <section class="event__section  event__section--destination">
               <h3 class="event__section-title  event__section-title--destination">Destination</h3>
               <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
@@ -148,19 +150,9 @@ export default class AddEventView {
     return createAddItemTemplate();
   }
 
-  checkOffersLength(element) {
-    const offersSection = element.querySelector('.event__section--offers');
-    const selectedType = element.querySelector('input[name="event-type"]:checked').value;
-    const offersOnSelectedType = mockOffers.find((offer) => offer.type === selectedType).offers;
-    if (offersOnSelectedType.length === 0) {
-      offersSection.remove();
-    }
-  }
-
   get element() {
     if (!this.#element) {
       this.#element = createElement(this.template);
-      this.checkOffersLength(this.#element);
     }
     return this.#element;
   }
