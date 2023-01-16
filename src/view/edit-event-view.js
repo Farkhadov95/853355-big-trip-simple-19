@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
 import { getMockOffersByType, humanizeEventDueDate } from '../utils.js';
 import { mockDestinations } from '../mock/events.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createEditItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, type} = event;
@@ -120,26 +120,15 @@ function createEditItemTemplate(event) {
   );
 }
 
-export default class EditEventView {
-  #element = null;
+export default class EditEventView extends AbstractView{
   #event = null;
 
   constructor(event) {
+    super();
     this.#event = event;
   }
 
   get template() {
     return createEditItemTemplate(this.#event);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

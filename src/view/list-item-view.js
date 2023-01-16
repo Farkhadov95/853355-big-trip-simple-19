@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEventDueDate } from '../utils.js';
 
 function createListItemTemplate(event) {
@@ -45,26 +45,15 @@ function createListItemTemplate(event) {
   );
 }
 
-export default class ListItemView {
-  #element = null;
+export default class ListItemView extends AbstractView{
   #event = null;
 
   constructor(event) {
+    super();
     this.#event = event;
   }
 
   get template() {
     return createListItemTemplate(this.#event);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
