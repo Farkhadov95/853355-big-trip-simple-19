@@ -42,41 +42,39 @@ export default class EventsPresenter {
     }
   }
 
-  #renderListItem(point) {
-    const listItemComponent = new ListItemView(point);
-    const editComponent = new EditEventView(point);
+  #renderListItem(event) {
 
-    const replaceEventToEdit = () => {
+    const listItemComponent = new ListItemView({
+      event,
+      onEditClick: () => {
+        replaceEventToEdit.call(this);
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    const editComponent = new EditEventView({
+      event,
+      onCloseClick: () => {
+        replaceEditToEvent.call(this);
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function replaceEventToEdit() {
       this.#eventListComponent.element.replaceChild(editComponent.element, listItemComponent.element);
-    };
+    }
 
-    const replaceEditToEvent = () => {
+    function replaceEditToEvent() {
       this.#eventListComponent.element.replaceChild(listItemComponent.element, editComponent.element);
-    };
+    }
 
-    const escKeyDownHandler = (evt) => {
+    function escKeyDownHandler(evt) {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
         replaceEditToEvent();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
-    };
-
-    listItemComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceEventToEdit();
-      document.addEventListener('keydown', escKeyDownHandler);
-    });
-
-    editComponent.element.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceEditToEvent();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    });
-
-    editComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceEditToEvent();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    });
+    }
 
     render(listItemComponent, this.#eventListComponent.element);
   }

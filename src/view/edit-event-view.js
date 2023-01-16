@@ -122,13 +122,25 @@ function createEditItemTemplate(event) {
 
 export default class EditEventView extends AbstractView{
   #event = null;
+  #handleClick = null;
 
-  constructor(event) {
+  constructor({event, onCloseClick}) {
     super();
     this.#event = event;
+
+    this.#handleClick = onCloseClick;
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeClickHandler);
+
+    this.element.addEventListener('submit', this.#closeClickHandler);
   }
 
   get template() {
     return createEditItemTemplate(this.#event);
   }
+
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleClick();
+  };
 }
