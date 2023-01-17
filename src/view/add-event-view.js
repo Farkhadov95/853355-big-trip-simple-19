@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
 import { mockOffers } from '../mock/events.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createOffersTemplate(selectedType = 'flight') {
   const offersOnSelectedType = mockOffers.find((offer) => offer.type === selectedType).offers;
@@ -143,21 +143,10 @@ function createAddItemTemplate() {
   );
 }
 
-export default class AddEventView {
+export default class AddEventView extends AbstractView{
   #element = null;
 
   get template() {
     return createAddItemTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
