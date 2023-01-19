@@ -17,4 +17,8 @@ function getMockOffersByType(point) {
   return offerType;
 }
 
-export {getRandomArrayElement, humanizeEventDueDate, getMockOffersByType};
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export {getRandomArrayElement, humanizeEventDueDate, getMockOffersByType, updateItem};
