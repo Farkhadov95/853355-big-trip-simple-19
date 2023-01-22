@@ -1,17 +1,23 @@
-import { render } from '../render.js';
+import {render, RenderPosition} from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import { getMockOffersByType, updateItem } from '../utils.js';
 import EmptyListView from '../view/list-empty-view.js';
 import EventPresenter from './event-presenter.js';
+import ListSortView from '../view/list-sort-view.js';
+import { SortType } from '../const.js';
+import { sortEventsByDay, sortEventsByPrice } from '../utils.js';
 
 export default class ListPresenter {
   #eventListComponent = new EventsListView();
   #emptyList = new EmptyListView();
 
+  #listSortComponent = null;
   #eventsListContainer = null;
   #eventsModel = null;
   #events = [];
   #eventsPresenters = new Map();
+  #currentSortType = SortType.DEFAULT;
+  #sourcedListEvents = [];
 
   constructor({eventsListContainer, eventsModel}) {
     this.#eventsListContainer = eventsListContainer;
@@ -20,7 +26,9 @@ export default class ListPresenter {
 
   init() {
     this.#events = [...this.#eventsModel.events];
+    this.#sourcedListEvents = [...this.#eventsModel.events];
 
+    this.#renderSortList();
     render(this.#eventListComponent, this.#eventsListContainer);
 
     if (this.#events.length === 0) {
@@ -28,6 +36,10 @@ export default class ListPresenter {
       return;
     }
 
+    this.#renderAllEvents();
+  }
+
+  #renderAllEvents() {
     for (const event of this.#events) {
       const eventWithSelectedOffers = {
         ...event,
@@ -43,6 +55,23 @@ export default class ListPresenter {
     }
   }
 
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#sortEvents(sortType);
+    this.#clearList();
+    this.#renderAllEvents();
+  };
+
+  #renderSortList() {
+    this.#listSortComponent = new ListSortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+    render(this.#listSortComponent, this.#eventsListContainer, RenderPosition.AFTERBEGIN);
+  }
+
   #handleModeChange = () => {
     this.#eventsPresenters.forEach((presenter) => presenter.resetView());
   };
@@ -54,8 +83,25 @@ export default class ListPresenter {
 
   #handleEventChange = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
+    this.#sourcedListEvents = updateItem(this.#sourcedListEvents , updatedEvent);
     this.#eventsPresenters.get(updatedEvent.id).init(updatedEvent);
   };
+
+  #sortEvents(sortType) {
+    switch (sortType) {
+      case SortType.DAY:
+        this.#events.sort(sortEventsByDay);
+        break;
+      case SortType.PRICE:
+        this.#events.sort(sortEventsByPrice);
+        break;
+      default:
+
+        this.#events = [...this.#sourcedListEvents];
+    }
+
+    this.#currentSortType = sortType;
+  }
 
   #renderListItem(event) {
     const eventPresenter = new EventPresenter({
