@@ -1,9 +1,8 @@
 import ListFilterView from './view/list-filter-view.js';
-import ListSortView from './view/list-sort-view.js';
 import EventsModel from './model/events-model.js';
 import EventsListView from './view/events-list-view.js';
 import AddEventView from './view/add-event-view.js';
-import {render, RenderPosition} from './render.js';
+import {render, RenderPosition} from './framework/render.js';
 import ListPresenter from './presenter/list-presenter.js';
 
 const tripMainContainer = document.querySelector('.trip-main');
@@ -15,16 +14,14 @@ const addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 const eventListComponent = new EventsListView();
 const addEventComponent = new AddEventView();
 const eventsModel = new EventsModel();
-const eventsPresenter = new ListPresenter({
+const listPresenter = new ListPresenter({
   eventsListContainer: eventsListContainer,
   eventsModel,
 });
 
 render(new ListFilterView(), filtersContainer);
-render(new ListSortView(), eventsListContainer);
-render(eventListComponent, eventsListContainer);
 
-eventsPresenter.init();
+listPresenter.init();
 
 function renderAddEvent() {
   const cancelButton = addEventComponent.element.querySelector('.event__reset-btn');

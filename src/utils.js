@@ -21,4 +21,30 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
-export {getRandomArrayElement, humanizeEventDueDate, getMockOffersByType, updateItem};
+function getWeightForNull(dateA, dateB) {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+}
+
+function sortEventsByDay(taskA, taskB) {
+  const weight = getWeightForNull(taskA.dateFrom, taskB.dateFrom);
+  return weight ?? dayjs(taskB.dateFrom).diff(dayjs(taskA.dateFrom));
+}
+
+function sortEventsByPrice(taskA, taskB) {
+  const weight = getWeightForNull(taskA.price, taskB.price);
+  return weight ?? (taskB.basePrice - taskA.basePrice);
+}
+
+export {getRandomArrayElement, humanizeEventDueDate, getMockOffersByType, updateItem, sortEventsByDay, sortEventsByPrice};
