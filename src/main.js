@@ -17,6 +17,7 @@ const eventsModel = new EventsModel();
 const listPresenter = new ListPresenter({
   eventsListContainer: eventsListContainer,
   eventsModel,
+  eventListComponent
 });
 
 render(new ListFilterView(), filtersContainer);
@@ -26,7 +27,6 @@ listPresenter.init();
 function renderAddEvent() {
   const cancelButton = addEventComponent.element.querySelector('.event__reset-btn');
   render(addEventComponent, eventListComponent.element, RenderPosition.AFTERBEGIN);
-
   cancelButton.addEventListener('click', () => {
     addEventComponent.element.remove();
   });

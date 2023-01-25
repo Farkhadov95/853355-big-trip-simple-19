@@ -144,8 +144,6 @@ function createAddItemTemplate() {
 }
 
 export default class AddEventView extends AbstractView{
-  #element = null;
-
   get template() {
     return createAddItemTemplate();
   }

@@ -1,6 +1,6 @@
 import { getMockOffersByType, humanizeEventDueDate } from '../utils.js';
 import { mockDestinations } from '../mock/events.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createEditItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, type} = event;
@@ -120,7 +120,7 @@ function createEditItemTemplate(event) {
   );
 }
 
-export default class EditEventView extends AbstractView{
+export default class EditEventView extends AbstractStatefulView{
   #event = null;
   #handleClick = null;
 

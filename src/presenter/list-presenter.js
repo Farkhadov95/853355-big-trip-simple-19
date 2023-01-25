@@ -1,5 +1,4 @@
 import {render, RenderPosition} from '../framework/render.js';
-import EventsListView from '../view/events-list-view.js';
 import { getMockOffersByType, updateItem } from '../utils.js';
 import EmptyListView from '../view/list-empty-view.js';
 import EventPresenter from './event-presenter.js';
@@ -8,7 +7,7 @@ import { SortType } from '../const.js';
 import { sortEventsByDay, sortEventsByPrice } from '../utils.js';
 
 export default class ListPresenter {
-  #eventListComponent = new EventsListView();
+  #eventListComponent = null;
   #emptyList = new EmptyListView();
 
   #listSortComponent = null;
@@ -19,9 +18,10 @@ export default class ListPresenter {
   #currentSortType = SortType.DEFAULT;
   #sourcedListEvents = [];
 
-  constructor({eventsListContainer, eventsModel}) {
+  constructor({eventsListContainer, eventsModel, eventListComponent}) {
     this.#eventsListContainer = eventsListContainer;
     this.#eventsModel = eventsModel;
+    this.#eventListComponent = eventListComponent;
   }
 
   init() {
