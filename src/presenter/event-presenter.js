@@ -42,7 +42,8 @@ export default class EventPresenter {
       onCloseClick: () => {
         this.#replaceEditToEvent.call(this);
         document.addEventListener('keydown', this.#escKeyDownHandler);
-      }
+      },
+      onFormSubmit: this.#handleFormSubmit
     });
 
     if (prevListItemComponent === null || prevEditListItemComponent === null) {
@@ -91,4 +92,9 @@ export default class EventPresenter {
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   }
+
+  #handleFormSubmit = (event) => {
+    this.#handleDataChange(event);
+    this.#replaceEditToEvent();
+  };
 }

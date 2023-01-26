@@ -121,26 +121,65 @@ function createEditItemTemplate(event) {
 }
 
 export default class EditEventView extends AbstractStatefulView{
-  #event = null;
-  #handleClick = null;
+  #handleClickClose = null;
+  #handleFormSubmit = null;
 
-  constructor({event, onCloseClick}) {
+  constructor({event, onCloseClick, onFormSubmit}) {
     super();
-    this.#event = event;
+    this._setState(EditEventView.parseEventToState(event));
 
-    this.#handleClick = onCloseClick;
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#closeClickHandler);
+    this.#handleClickClose = onCloseClick;
+    this.#handleFormSubmit = onFormSubmit;
 
-    this.element.addEventListener('submit', this.#closeClickHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEditItemTemplate(this.#event);
+    return createEditItemTemplate(this._state);
   }
 
   #closeClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleClick();
+    this.#handleClickClose();
   };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit(EditEventView.parseStateToEvent(this._state));
+  };
+
+  static parseEventToState(event) {
+    return event;
+  }
+
+  static parseStateToEvent(state) {
+    const event = state;
+    return event;
+  }
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.value
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      destination: evt.target.value
+    });
+  };
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeClickHandler);
+    this.element.addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelectorAll('input[name="event-type"]')
+      .forEach((input) => input.addEventListener('click', this.#typeChangeHandler));
+
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+  }
 }
