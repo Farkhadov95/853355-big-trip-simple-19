@@ -121,14 +121,14 @@ function createEditItemTemplate(event) {
 }
 
 export default class EditEventView extends AbstractStatefulView{
-  #handleClickClose = null;
+  #handleRollUpClose = null;
   #handleFormSubmit = null;
 
-  constructor({event, onCloseClick, onFormSubmit}) {
+  constructor({event, onRollUpClick, onFormSubmit}) {
     super();
     this._setState(EditEventView.parseEventToState(event));
 
-    this.#handleClickClose = onCloseClick;
+    this.#handleRollUpClose = onRollUpClick;
     this.#handleFormSubmit = onFormSubmit;
 
     this._restoreHandlers();
@@ -140,7 +140,7 @@ export default class EditEventView extends AbstractStatefulView{
 
   #closeClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleClickClose();
+    this.#handleRollUpClose();
   };
 
   #formSubmitHandler = (evt) => {
