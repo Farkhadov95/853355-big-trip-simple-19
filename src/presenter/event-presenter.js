@@ -1,6 +1,7 @@
 import ListItemView from '../view/list-item-view.js';
 import EditEventView from '../view/edit-event-view.js';
-import { remove, render, replace } from '../framework/render.js';
+import AddEventView from '../view/add-event-view.js';
+import { remove, render, replace, RenderPosition } from '../framework/render.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -11,16 +12,22 @@ export default class EventPresenter {
   #eventsListContainer = null;
   #listItemComponent = null;
   #editListItemComponent = null;
+  #addEventComponent = null;
   #event = null;
   #handleDataChange = null;
   #handleModeChange = null;
+  #handleAddButtonClick = null;
+  #emptyListHandler = null;
 
   #mode = Mode.DEFAULT;
 
-  constructor({eventsListContainer, onDataChange, onModeChange}) {
+
+  constructor({eventsListContainer, onDataChange, onModeChange, onAddButtonClick, onEmptyList}) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#handleAddButtonClick = onAddButtonClick;
+    this.#emptyListHandler = onEmptyList;
   }
 
   init(event) {
@@ -28,21 +35,17 @@ export default class EventPresenter {
 
     const prevListItemComponent = this.#listItemComponent;
     const prevEditListItemComponent = this.#editListItemComponent;
+    const prevAddEventComponent = this.#addEventComponent;
 
     this.#listItemComponent = new ListItemView({
       event,
-      onEditClick: () => {
-        this.#replaceEventToEdit.call(this);
-        document.addEventListener('keydown', this.#escKeyDownHandler);
-      }
+      onEditClick: this.#handleEditClick
     });
 
     this.#editListItemComponent = new EditEventView({
       event,
-      onCloseClick: () => {
-        this.#replaceEditToEvent.call(this);
-        document.addEventListener('keydown', this.#escKeyDownHandler);
-      }
+      onRollUpClick: this.#handleRollUpClick,
+      onFormSubmit: this.#handleFormSubmit
     });
 
     if (prevListItemComponent === null || prevEditListItemComponent === null) {
@@ -60,6 +63,19 @@ export default class EventPresenter {
 
     remove(prevListItemComponent);
     remove(prevEditListItemComponent);
+    remove(prevAddEventComponent);
+  }
+
+  initAddEvent(event) {
+    this.#handleAddButtonClick.addEventListener('click', () => {
+      this.#addEventComponent = new AddEventView({
+        event: event,
+        onCloseClick: this.#handleCloseClick,
+        onFormSubmit: this.#handleNewEventFormSubmit,
+      });
+      render(this.#addEventComponent, this.#eventsListContainer, RenderPosition.AFTERBEGIN);
+      document.addEventListener('keydown', this.#escKeyDownHandler);
+    });
   }
 
   destroy() {
@@ -74,21 +90,50 @@ export default class EventPresenter {
   }
 
   #replaceEventToEdit() {
-    this.#eventsListContainer.replaceChild(this.#editListItemComponent.element, this.#listItemComponent.element);
+    replace(this.#editListItemComponent, this.#listItemComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
   }
 
   #replaceEditToEvent() {
-    this.#eventsListContainer.replaceChild(this.#listItemComponent.element, this.#editListItemComponent.element);
+    replace(this.#listItemComponent, this.#editListItemComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   }
 
-  #escKeyDownHandler(evt) {
+  #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#replaceEditToEvent();
+      if (this.#mode !== Mode.DEFAULT) {
+        this.#replaceEditToEvent();
+        return;
+      }
+      this.#handleCloseClick();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
-  }
+  };
+
+  #handleFormSubmit = (event) => {
+    this.#handleDataChange(event);
+    this.#replaceEditToEvent();
+  };
+
+  #handleNewEventFormSubmit = (event) => {
+    this.#handleDataChange(event);
+    this.#emptyListHandler();
+    this.#handleCloseClick();
+  };
+
+  #handleEditClick = () => {
+    this.#replaceEventToEdit();
+  };
+
+  #handleRollUpClick = () => {
+    this.#replaceEditToEvent();
+  };
+
+  #handleCloseClick = () => {
+    this.#addEventComponent.element.remove();
+  };
 }

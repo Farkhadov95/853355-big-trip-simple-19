@@ -1,27 +1,31 @@
 import {render, RenderPosition} from '../framework/render.js';
-import EventsListView from '../view/events-list-view.js';
-import { getMockOffersByType, updateItem } from '../utils.js';
+import { getMockOffersByType, updateItem} from '../utils.js';
 import EmptyListView from '../view/list-empty-view.js';
 import EventPresenter from './event-presenter.js';
 import ListSortView from '../view/list-sort-view.js';
 import { SortType } from '../const.js';
 import { sortEventsByDay, sortEventsByPrice } from '../utils.js';
+import { getRandomPoint } from '../mock/events.js';
 
 export default class ListPresenter {
-  #eventListComponent = new EventsListView();
-  #emptyList = new EmptyListView();
+  #eventListComponent = null;
 
   #listSortComponent = null;
   #eventsListContainer = null;
   #eventsModel = null;
   #events = [];
+  #initEvent = getRandomPoint();
   #eventsPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
   #sourcedListEvents = [];
+  #addEventButton = null;
+  #emptyListMessage = new EmptyListView();
 
-  constructor({eventsListContainer, eventsModel}) {
+  constructor({eventsListContainer, eventsModel, eventListComponent, addEventButton}) {
     this.#eventsListContainer = eventsListContainer;
     this.#eventsModel = eventsModel;
+    this.#eventListComponent = eventListComponent;
+    this.#addEventButton = addEventButton;
   }
 
   init() {
@@ -29,11 +33,13 @@ export default class ListPresenter {
     this.#sourcedListEvents = [...this.#eventsModel.events];
 
     this.#renderSortList();
+
+    this.#renderAddEvent(this.#initEvent);
+
     render(this.#eventListComponent, this.#eventsListContainer);
 
     if (this.#events.length === 0) {
-      render(this.#emptyList, this.#eventListComponent.element);
-      return;
+      render(this.#emptyListMessage, this.#eventListComponent.element);
     }
 
     this.#renderAllEvents();
@@ -107,9 +113,31 @@ export default class ListPresenter {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleEventChange,
-      onModeChange: this.#handleModeChange
+      onModeChange: this.#handleModeChange,
+      onAddButtonClick: this.#addEventButton,
+      onEmptyList: this.#emplyListHandler
     });
     eventPresenter.init(event);
     this.#eventsPresenters.set(event.id, eventPresenter);
   }
+
+  #renderAddEvent(event) {
+    const eventPresenter = new EventPresenter({
+      eventsListContainer: this.#eventListComponent.element,
+      onDataChange: this.#handleEventChange,
+      onModeChange: this.#handleModeChange,
+      onAddButtonClick: this.#addEventButton,
+      onEmptyList: this.#emplyListHandler
+    });
+    eventPresenter.initAddEvent(event);
+    this.#eventsPresenters.set(event.id, eventPresenter);
+  }
+
+  #emplyListHandler = () => {
+    if ((this.#events.length === 0)) {
+      this.#emptyListMessage.element.remove();
+    }
+  };
+
+
 }

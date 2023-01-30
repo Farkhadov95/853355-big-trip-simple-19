@@ -1,6 +1,6 @@
 import { getMockOffersByType, humanizeEventDueDate } from '../utils.js';
 import { mockDestinations } from '../mock/events.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createEditItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, type} = event;
@@ -120,27 +120,66 @@ function createEditItemTemplate(event) {
   );
 }
 
-export default class EditEventView extends AbstractView{
-  #event = null;
-  #handleClick = null;
+export default class EditEventView extends AbstractStatefulView{
+  #handleRollUpClose = null;
+  #handleFormSubmit = null;
 
-  constructor({event, onCloseClick}) {
+  constructor({event, onRollUpClick, onFormSubmit}) {
     super();
-    this.#event = event;
+    this._setState(EditEventView.parseEventToState(event));
 
-    this.#handleClick = onCloseClick;
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#closeClickHandler);
+    this.#handleRollUpClose = onRollUpClick;
+    this.#handleFormSubmit = onFormSubmit;
 
-    this.element.addEventListener('submit', this.#closeClickHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEditItemTemplate(this.#event);
+    return createEditItemTemplate(this._state);
   }
 
   #closeClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleClick();
+    this.#handleRollUpClose();
   };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit(EditEventView.parseStateToEvent(this._state));
+  };
+
+  static parseEventToState(event) {
+    return event;
+  }
+
+  static parseStateToEvent(state) {
+    const event = state;
+    return event;
+  }
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.value
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      destination: evt.target.value
+    });
+  };
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeClickHandler);
+    this.element.addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__type-list')
+      .addEventListener('change', this.#typeChangeHandler);
+
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+  }
 }
