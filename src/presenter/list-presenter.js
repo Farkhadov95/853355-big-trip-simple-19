@@ -134,7 +134,7 @@ export default class ListPresenter {
   }
 
   #emplyListHandler = () => {
-    if ((this.#eventListComponent.element).contains(this.#emptyListMessage.element)) {
+    if ((this.#events.length === 0)) {
       this.#emptyListMessage.element.remove();
     }
   };
