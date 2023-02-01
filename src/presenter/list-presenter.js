@@ -1,10 +1,9 @@
 import {render, RenderPosition} from '../framework/render.js';
-import { getMockOffersByType, updateItem} from '../utils.js';
 import EmptyListView from '../view/list-empty-view.js';
 import EventPresenter from './event-presenter.js';
 import ListSortView from '../view/list-sort-view.js';
-import { SortType } from '../const.js';
-import { sortEventsByDay, sortEventsByPrice } from '../utils.js';
+import { SortType, UpdateType, UserAction } from '../const.js';
+import { sortEventsByDay, sortEventsByPrice, getMockOffersByType } from '../utils.js';
 import { getRandomPoint } from '../mock/events.js';
 
 export default class ListPresenter {
@@ -13,11 +12,9 @@ export default class ListPresenter {
   #listSortComponent = null;
   #eventsListContainer = null;
   #eventsModel = null;
-  #events = [];
   #initEvent = getRandomPoint();
   #eventsPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
-  #sourcedListEvents = [];
   #addEventButton = null;
   #emptyListMessage = new EmptyListView();
 
@@ -26,27 +23,65 @@ export default class ListPresenter {
     this.#eventsModel = eventsModel;
     this.#eventListComponent = eventListComponent;
     this.#addEventButton = addEventButton;
+
+    this.#eventsModel.addObserver(this.#handleModelEvent);
+  }
+
+  get events() {
+    switch (this.#currentSortType) {
+      case SortType.DAY:
+        return [...this.#eventsModel.events].sort(sortEventsByDay);
+      case SortType.PRICE:
+        return [...this.#eventsModel.events].sort(sortEventsByPrice);
+    }
+
+    return this.#eventsModel.events;
   }
 
   init() {
-    this.#events = [...this.#eventsModel.events];
-    this.#sourcedListEvents = [...this.#eventsModel.events];
-
     this.#renderSortList();
-
     this.#renderAddEvent(this.#initEvent);
-
     render(this.#eventListComponent, this.#eventsListContainer);
 
-    if (this.#events.length === 0) {
+    if (this.events.length === 0) {
       render(this.#emptyListMessage, this.#eventListComponent.element);
     }
-
     this.#renderAllEvents();
   }
 
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_TASK:
+        this.#eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_TASK:
+        this.#eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_TASK:
+        this.#eventsModel.deleteEvent(updateType, update);
+        break;
+    }
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#eventsPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        // this.#clearList();
+        this.#renderList();
+        // - обновить список (например, когда задача ушла в архив)
+        break;
+      case UpdateType.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+    }
+  };
+
   #renderAllEvents() {
-    for (const event of this.#events) {
+    for (const event of this.events) {
+
       const eventWithSelectedOffers = {
         ...event,
         offers: event.offers.map((id) => {
@@ -65,8 +100,7 @@ export default class ListPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-    this.#sortEvents(sortType);
-    this.#clearList();
+    this.#clearEventsList();
     this.#renderAllEvents();
   };
 
@@ -82,40 +116,18 @@ export default class ListPresenter {
     this.#eventsPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #clearList() {
+  #clearEventsList() {
     this.#eventsPresenters.forEach((presenter) => presenter.destroy());
     this.#eventsPresenters.clear();
-  }
-
-  #handleEventChange = (updatedEvent) => {
-    this.#events = updateItem(this.#events, updatedEvent);
-    this.#sourcedListEvents = updateItem(this.#sourcedListEvents , updatedEvent);
-    this.#eventsPresenters.get(updatedEvent.id).init(updatedEvent);
-  };
-
-  #sortEvents(sortType) {
-    switch (sortType) {
-      case SortType.DAY:
-        this.#events.sort(sortEventsByDay);
-        break;
-      case SortType.PRICE:
-        this.#events.sort(sortEventsByPrice);
-        break;
-      default:
-
-        this.#events = [...this.#sourcedListEvents];
-    }
-
-    this.#currentSortType = sortType;
   }
 
   #renderListItem(event) {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventListComponent.element,
-      onDataChange: this.#handleEventChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
       onAddButtonClick: this.#addEventButton,
-      onEmptyList: this.#emplyListHandler
+      onEmptyList: this.#emplyListMessageHandler
     });
     eventPresenter.init(event);
     this.#eventsPresenters.set(event.id, eventPresenter);
@@ -124,17 +136,42 @@ export default class ListPresenter {
   #renderAddEvent(event) {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventListComponent.element,
-      onDataChange: this.#handleEventChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
       onAddButtonClick: this.#addEventButton,
-      onEmptyList: this.#emplyListHandler
+      onEmptyList: this.#emplyListMessageHandler
     });
     eventPresenter.initAddEvent(event);
     this.#eventsPresenters.set(event.id, eventPresenter);
   }
 
-  #emplyListHandler = () => {
-    if ((this.#events.length === 0)) {
+  // #clearList({resetSortType = false} = {}) {
+  //   const taskCount = this.tasks.length;
+
+  //   this.#newTaskPresenter.destroy();
+  //   this.#taskPresenter.forEach((presenter) => presenter.destroy());
+  //   this.#taskPresenter.clear();
+
+  //   remove(this.#sortComponent);
+  //   remove(this.#loadMoreButtonComponent);
+
+  //   if (this.#noTaskComponent) {
+  //     remove(this.#noTaskComponent);
+  //   }
+
+  //   this.#renderedTaskCount = Math.min(taskCount, this.#renderedTaskCount);
+
+  //   if (resetSortType) {
+  //     this.#currentSortType = SortType.DEFAULT;
+  //   }
+  // }
+
+  #renderList() {
+
+  }
+
+  #emplyListMessageHandler = () => {
+    if ((this.events.length === 0)) {
       this.#emptyListMessage.element.remove();
     }
   };

@@ -1,6 +1,7 @@
 import ListItemView from '../view/list-item-view.js';
 import EditEventView from '../view/edit-event-view.js';
 import AddEventView from '../view/add-event-view.js';
+import { UserAction, UpdateType} from '../const.js';
 import { remove, render, replace, RenderPosition } from '../framework/render.js';
 
 const Mode = {
@@ -115,7 +116,11 @@ export default class EventPresenter {
   };
 
   #handleFormSubmit = (event) => {
-    this.#handleDataChange(event);
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      event
+    );
     this.#replaceEditToEvent();
   };
 

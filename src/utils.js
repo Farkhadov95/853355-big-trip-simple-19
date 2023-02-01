@@ -17,14 +17,6 @@ function getMockOffersByType(point) {
   return offerType;
 }
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
-
-function updateSingleItem(item, update) {
-  return item.id === update.id ? update : item;
-}
-
 function getWeightForNull(dateA, dateB) {
   if (dateA === null && dateB === null) {
     return 0;
@@ -51,4 +43,5 @@ function sortEventsByPrice(taskA, taskB) {
   return weight ?? (taskB.basePrice - taskA.basePrice);
 }
 
-export {getRandomArrayElement, humanizeEventDueDate, getMockOffersByType, updateItem, sortEventsByDay, sortEventsByPrice, updateSingleItem};
+
+export {getRandomArrayElement, humanizeEventDueDate, getMockOffersByType, sortEventsByDay, sortEventsByPrice};
