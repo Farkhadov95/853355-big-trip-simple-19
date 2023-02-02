@@ -6,7 +6,7 @@ const SortType = {
 };
 
 const FilterType = {
-  ALL: 'all',
+  EVERYTHING: 'everything',
   FUTURE: 'future'
 };
 

@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDueDate } from '../utils.js';
+import { humanizeEventDueDate } from '../utils/utils.js';
 
 function createListItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = event;

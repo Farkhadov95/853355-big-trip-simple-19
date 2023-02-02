@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { mockOffers } from './mock/events';
+import { mockOffers } from '../mock/events';
 
 const DATE_FORMAT = 'DD/MM/YY HH:MM';
 
@@ -47,12 +47,12 @@ function isDatesEqual(dateA, dateB) {
   return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 }
 
-function isEventExpired(dueDate) {
+function isEventStarted(dueDate) {
   return dueDate && dayjs().isAfter(dueDate, 'D');
 }
 
 
 export {getRandomArrayElement, humanizeEventDueDate,
   getMockOffersByType, sortEventsByDay, sortEventsByPrice,
-  isDatesEqual, isEventExpired
+  isDatesEqual, isEventStarted
 };

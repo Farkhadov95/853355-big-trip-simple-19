@@ -1,6 +1,6 @@
 import { mockDestinations } from '../mock/events.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getMockOffersByType, humanizeEventDueDate } from '../utils.js';
+import { getMockOffersByType, humanizeEventDueDate } from '../utils/utils.js';
 import { getRandomPoint } from '../mock/events.js';
 
 const initEvent = getRandomPoint();

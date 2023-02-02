@@ -2,9 +2,10 @@ import {render, remove, RenderPosition} from '../framework/render.js';
 import EmptyListView from '../view/list-empty-view.js';
 import EventPresenter from './event-presenter.js';
 import ListSortView from '../view/list-sort-view.js';
-import { SortType, UpdateType, UserAction } from '../const.js';
-import { sortEventsByDay, sortEventsByPrice, getMockOffersByType } from '../utils.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
+import { sortEventsByDay, sortEventsByPrice, getMockOffersByType } from '../utils/utils.js';
 import NewEventPresenter from './new-event-presenter.js';
+import { filter } from '../utils/filter.js';
 
 export default class ListPresenter {
   #eventListComponent = null;
@@ -12,15 +13,18 @@ export default class ListPresenter {
   #listSortComponent = null;
   #eventsListContainer = null;
   #eventsModel = null;
+  #filterModel = null;
   #eventsPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
   #addEventButton = null;
-  #emptyListMessage = new EmptyListView();
+  #emptyListMessage = null;
   #newEventPresenter = null;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor({eventsListContainer, eventsModel, eventListComponent, onNewEventDestroy}) {
+  constructor({eventsListContainer, eventsModel, filterModel, eventListComponent, onNewEventDestroy}) {
     this.#eventsListContainer = eventsListContainer;
     this.#eventsModel = eventsModel;
+    this.#filterModel = filterModel;
     this.#eventListComponent = eventListComponent;
 
     this.#newEventPresenter = new NewEventPresenter({
@@ -31,17 +35,22 @@ export default class ListPresenter {
     });
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
+    this.#filterType = this.#filterModel.filter;
+    const events = this.#eventsModel.events;
+    const filteredEvents = filter[this.#filterType](events);
+
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return [...this.#eventsModel.events].sort(sortEventsByDay);
+        return filteredEvents.sort(sortEventsByDay);
       case SortType.PRICE:
-        return [...this.#eventsModel.events].sort(sortEventsByPrice);
+        return filteredEvents.sort(sortEventsByPrice);
     }
 
-    return this.#eventsModel.events;
+    return filteredEvents;
   }
 
   init() {
@@ -50,6 +59,7 @@ export default class ListPresenter {
 
   createEvent() {
     this.#currentSortType = SortType.DEFAULT;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newEventPresenter.init();
   }
 

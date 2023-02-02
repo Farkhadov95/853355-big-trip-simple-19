@@ -1,4 +1,4 @@
-import { getRandomArrayElement } from '../utils.js';
+import { getRandomArrayElement } from '../utils/utils.js';
 import { POINTS_TYPE } from '../const.js';
 import { nanoid } from 'nanoid';
 
