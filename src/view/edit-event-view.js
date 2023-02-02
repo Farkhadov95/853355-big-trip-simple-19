@@ -123,19 +123,27 @@ function createEditItemTemplate(event) {
 export default class EditEventView extends AbstractStatefulView{
   #handleRollUpClose = null;
   #handleFormSubmit = null;
+  #hadleDeleteClick = null;
 
-  constructor({event, onRollUpClick, onFormSubmit}) {
+  constructor({event, onRollUpClick, onFormSubmit, onDeleteClick}) {
     super();
     this._setState(EditEventView.parseEventToState(event));
 
     this.#handleRollUpClose = onRollUpClick;
     this.#handleFormSubmit = onFormSubmit;
+    this.#hadleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
   }
 
   get template() {
     return createEditItemTemplate(this._state);
+  }
+
+  reset(event) {
+    this.updateElement(
+      EditEventView.parseEventToState(event)
+    );
   }
 
   #closeClickHandler = (evt) => {
@@ -171,6 +179,11 @@ export default class EditEventView extends AbstractStatefulView{
     });
   };
 
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#hadleDeleteClick(EditEventView.parseStateToEvent(this._state));
+  };
+
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#closeClickHandler);
@@ -178,6 +191,9 @@ export default class EditEventView extends AbstractStatefulView{
 
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#typeChangeHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#deleteClickHandler);
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);

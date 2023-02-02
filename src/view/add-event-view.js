@@ -1,15 +1,18 @@
 import { mockDestinations } from '../mock/events.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getMockOffersByType, humanizeEventDueDate } from '../utils.js';
+import { getRandomPoint } from '../mock/events.js';
 
-function createOffersTemplate(selectedType) {
-  if (selectedType.length !== 0) {
+const initEvent = getRandomPoint();
+
+function createOffersTemplate(offers) {
+  if (offers.length !== 0) {
     return `
     <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
       <!-- Offers -->
-    ${selectedType.map((offer) => (
+    ${offers.map((offer) => (
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}">
         <label class="event__offer-label" for="event-offer-${offer.id}">
@@ -152,7 +155,7 @@ export default class AddEventView extends AbstractStatefulView{
   #handleClickClose = null;
   #handleFormSubmit = null;
 
-  constructor({event, onCloseClick, onFormSubmit}) {
+  constructor({event = initEvent, onCloseClick, onFormSubmit}) {
     super();
     this._setState(event);
 

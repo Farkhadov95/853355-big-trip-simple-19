@@ -33,15 +33,26 @@ function getWeightForNull(dateA, dateB) {
   return null;
 }
 
-function sortEventsByDay(taskA, taskB) {
-  const weight = getWeightForNull(taskA.dateFrom, taskB.dateFrom);
-  return weight ?? dayjs(taskB.dateFrom).diff(dayjs(taskA.dateFrom));
+function sortEventsByDay(eventA, eventB) {
+  const weight = getWeightForNull(eventA.dateFrom, eventB.dateFrom);
+  return weight ?? dayjs(eventB.dateFrom).diff(dayjs(eventA.dateFrom));
 }
 
-function sortEventsByPrice(taskA, taskB) {
-  const weight = getWeightForNull(taskA.price, taskB.price);
-  return weight ?? (taskB.basePrice - taskA.basePrice);
+function sortEventsByPrice(eventA, eventB) {
+  const weight = getWeightForNull(eventA.price, eventB.price);
+  return weight ?? (eventB.basePrice - eventA.basePrice);
+}
+
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
+function isEventExpired(dueDate) {
+  return dueDate && dayjs().isAfter(dueDate, 'D');
 }
 
 
-export {getRandomArrayElement, humanizeEventDueDate, getMockOffersByType, sortEventsByDay, sortEventsByPrice};
+export {getRandomArrayElement, humanizeEventDueDate,
+  getMockOffersByType, sortEventsByDay, sortEventsByPrice,
+  isDatesEqual, isEventExpired
+};
