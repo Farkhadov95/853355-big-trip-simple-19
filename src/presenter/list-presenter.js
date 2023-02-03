@@ -3,7 +3,7 @@ import EmptyListView from '../view/list-empty-view.js';
 import EventPresenter from './event-presenter.js';
 import ListSortView from '../view/list-sort-view.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
-import { sortEventsByDay, sortEventsByPrice, getMockOffersByType } from '../utils/utils.js';
+import { sortEventsByDay, sortEventsByPrice } from '../utils/utils.js';
 import NewEventPresenter from './new-event-presenter.js';
 import { filter } from '../utils/filter.js';
 
@@ -41,6 +41,7 @@ export default class ListPresenter {
   get events() {
     this.#filterType = this.#filterModel.filter;
     const events = this.#eventsModel.events;
+
     const filteredEvents = filter[this.#filterType](events);
 
     switch (this.#currentSortType) {
@@ -49,7 +50,6 @@ export default class ListPresenter {
       case SortType.PRICE:
         return filteredEvents.sort(sortEventsByPrice);
     }
-
     return filteredEvents;
   }
 
@@ -128,20 +128,10 @@ export default class ListPresenter {
     this.#eventsPresenters.set(event.id, eventPresenter);
   }
 
-  #renderAllEvents() {
-    for (const event of this.events) {
 
-      const eventWithSelectedOffers = {
-        ...event,
-        offers: event.offers.map((id) => {
-          const offer = getMockOffersByType(event).find(
-            (mockOffer) => mockOffer.id === id,
-          );
-          return offer;
-        }),
-      };
-
-      this.#renderListItem(eventWithSelectedOffers);
+  #renderAllEvents(allEvents = this.events) {
+    for (const event of allEvents) {
+      this.#renderListItem(event);
     }
   }
 
@@ -171,6 +161,7 @@ export default class ListPresenter {
 
     const events = this.events;
     const eventsCount = events.length;
+    // console.log(events);
 
     if ((eventsCount === 0)) {
       this.#renderEmptyListMessage();
@@ -178,7 +169,7 @@ export default class ListPresenter {
     }
 
     this.#renderSortList();
-    this.#renderAllEvents();
+    this.#renderAllEvents(events);
   }
 
 }

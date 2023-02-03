@@ -34,12 +34,12 @@ export default class EventPresenter {
     const prevAddEventComponent = this.#addEventComponent;
 
     this.#listItemComponent = new ListItemView({
-      event,
+      event: this.#event,
       onEditClick: this.#handleEditClick
     });
 
     this.#editListItemComponent = new EditEventView({
-      event,
+      event: this.#event,
       onRollUpClick: this.#handleRollUpClick,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick
@@ -96,11 +96,11 @@ export default class EventPresenter {
     }
   };
 
-  #handleFormSubmit = (event) => {
+  #handleFormSubmit = (update) => {
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       UpdateType.MINOR,
-      event
+      update
     );
     this.#replaceEditToEvent();
   };
@@ -122,7 +122,4 @@ export default class EventPresenter {
     this.#replaceEditToEvent();
   };
 
-//   #handleCloseClick = () => {
-//     this.#addEventComponent.element.remove();
-//   };
 }
