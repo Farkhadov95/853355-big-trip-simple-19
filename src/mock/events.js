@@ -25,8 +25,8 @@ const mockPoints = [
   },
   {
     'basePrice': 30,
-    'dateFrom': '2013-07-10T22:55:56.845Z',
-    'dateTo': '2019-07-11T11:22:13.375Z',
+    'dateFrom': '2023-07-10T22:55:56.845Z',
+    'dateTo': '2024-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': 3,
     'offers': [1],
@@ -34,8 +34,8 @@ const mockPoints = [
   },
   {
     'basePrice': 200,
-    'dateFrom': '2016-07-10T22:55:56.845Z',
-    'dateTo': '2019-07-11T11:22:13.375Z',
+    'dateFrom': '2025-07-10T22:55:56.845Z',
+    'dateTo': '2025-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': 4,
     'offers': [1, 2, 3],

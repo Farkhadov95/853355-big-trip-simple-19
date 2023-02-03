@@ -47,8 +47,8 @@ function isDatesEqual(dateA, dateB) {
   return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 }
 
-function isEventStarted(dueDate) {
-  return dueDate && dayjs().isAfter(dueDate, 'D');
+function isEventStarted(dateFrom) {
+  return dateFrom && dayjs().isBefore(dateFrom, 'D');
 }
 
 

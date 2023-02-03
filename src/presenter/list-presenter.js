@@ -16,7 +16,6 @@ export default class ListPresenter {
   #filterModel = null;
   #eventsPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
-  #addEventButton = null;
   #emptyListMessage = null;
   #newEventPresenter = null;
   #filterType = FilterType.EVERYTHING;
@@ -41,7 +40,6 @@ export default class ListPresenter {
   get events() {
     this.#filterType = this.#filterModel.filter;
     const events = this.#eventsModel.events;
-
     const filteredEvents = filter[this.#filterType](events);
 
     switch (this.#currentSortType) {
@@ -50,6 +48,7 @@ export default class ListPresenter {
       case SortType.PRICE:
         return filteredEvents.sort(sortEventsByPrice);
     }
+
     return filteredEvents;
   }
 
@@ -90,11 +89,9 @@ export default class ListPresenter {
       case UpdateType.MINOR:
         this.#clearList();
         this.#renderList();
-        // - обновить список (например, когда задача ушла в архив)
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
-        this.#clearList();
+        this.#clearList({resetSortType: true});
         this.#renderList();
         break;
     }
@@ -130,9 +127,7 @@ export default class ListPresenter {
 
 
   #renderAllEvents(allEvents = this.events) {
-    for (const event of allEvents) {
-      this.#renderListItem(event);
-    }
+    allEvents.forEach((event) => this.#renderListItem(event));
   }
 
   #renderEmptyListMessage() {
@@ -161,15 +156,15 @@ export default class ListPresenter {
 
     const events = this.events;
     const eventsCount = events.length;
-    // console.log(events);
 
     if ((eventsCount === 0)) {
       this.#renderEmptyListMessage();
       return;
     }
 
+    render(this.#eventListComponent, this.#eventsListContainer);
     this.#renderSortList();
-    this.#renderAllEvents(events);
+    this.#renderAllEvents(this.events);
   }
 
 }
