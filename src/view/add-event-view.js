@@ -1,15 +1,18 @@
 import { mockDestinations } from '../mock/events.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getMockOffersByType, humanizeEventDueDate } from '../utils.js';
+import { getMockOffersByType, humanizeEventDueDate } from '../utils/utils.js';
+import { getRandomPoint } from '../mock/events.js';
 
-function createOffersTemplate(selectedType) {
-  if (selectedType.length !== 0) {
+const initEvent = getRandomPoint();
+
+function createOffersTemplate(offers) {
+  if (offers.length !== 0) {
     return `
     <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
       <!-- Offers -->
-    ${selectedType.map((offer) => (
+    ${offers.map((offer) => (
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}">
         <label class="event__offer-label" for="event-offer-${offer.id}">
@@ -48,47 +51,47 @@ function createAddItemTemplate(event) {
                   <legend class="visually-hidden">Event type</legend>
 
                   <div class="event__type-item">
-                    <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
+                    <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${type === 'taxi' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
                   </div>
 
                   <div class="event__type-item">
-                    <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
+                    <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${type === 'bus' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
                   </div>
 
                   <div class="event__type-item">
-                    <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
+                    <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${type === 'train' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
                   </div>
 
                   <div class="event__type-item">
-                    <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
+                    <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${type === 'ship' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
                   </div>
 
                   <div class="event__type-item">
-                    <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
+                    <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${type === 'drive' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
                   </div>
 
                   <div class="event__type-item">
-                    <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                    <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${type === 'flight' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
                   </div>
 
                   <div class="event__type-item">
-                    <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
+                    <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${type === 'check-in' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
                   </div>
 
                   <div class="event__type-item">
-                    <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
+                    <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${type === 'sightseeing' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
                   </div>
 
                   <div class="event__type-item">
-                    <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
+                    <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${type === 'restaurant' ? 'checked' : ''}>
                     <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
                   </div>
                 </fieldset>
@@ -152,7 +155,7 @@ export default class AddEventView extends AbstractStatefulView{
   #handleClickClose = null;
   #handleFormSubmit = null;
 
-  constructor({event, onCloseClick, onFormSubmit}) {
+  constructor({event = initEvent, onCloseClick, onFormSubmit}) {
     super();
     this._setState(event);
 

@@ -1,11 +1,12 @@
-import { getRandomArrayElement } from '../utils.js';
+// import { getRandomArrayElement, getMockOffersByType } from '../utils.js';
+import { getRandomArrayElement, getMockOffersByType } from '../utils/utils.js';
 import { POINTS_TYPE } from '../const.js';
 import { nanoid } from 'nanoid';
 
 const mockPoints = [
   {
-    'basePrice': 50,
-    'dateFrom': '2018-07-10T22:55:56.845Z',
+    'basePrice': 120,
+    'dateFrom': '2019-07-10T22:55:56.845Z',
     'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': 1,
@@ -14,36 +15,36 @@ const mockPoints = [
   },
 
   {
-    'basePrice': 60,
+    'basePrice': 80,
     'dateFrom': '2011-07-10T22:55:56.845Z',
-    'dateTo': '2012-07-11T11:22:13.375Z',
+    'dateTo': '2019-07-11T11:22:13.375Z',
     'destination': 'Chamonix',
     'id': 2,
     'offers': [1, 2],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
-    'basePrice': 70,
-    'dateFrom': '2017-07-10T22:55:56.845Z',
-    'dateTo': '2018-07-11T11:22:13.375Z',
+    'basePrice': 30,
+    'dateFrom': '2023-07-10T22:55:56.845Z',
+    'dateTo': '2024-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': 3,
     'offers': [1],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
-    'basePrice': 80,
-    'dateFrom': '2015-07-10T22:55:56.845Z',
-    'dateTo': '2016-07-11T11:22:13.375Z',
+    'basePrice': 200,
+    'dateFrom': '2025-07-10T22:55:56.845Z',
+    'dateTo': '2025-07-11T11:22:13.375Z',
     'destination': 'Geneva',
     'id': 4,
     'offers': [1, 2, 3],
     'type': getRandomArrayElement(POINTS_TYPE),
   },
   {
-    'basePrice': 90,
+    'basePrice': 455,
     'dateFrom': '2022-07-10T22:55:56.845Z',
-    'dateTo': '2023-07-11T11:22:13.375Z',
+    'dateTo': '2031-07-11T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': 5,
     'offers': [1],
@@ -277,8 +278,15 @@ const mockDestinations = [
 ];
 
 function getRandomPoint() {
+  const mockEvent = getRandomArrayElement(mockPoints);
   return {
-    ...getRandomArrayElement(mockPoints),
+    ...mockEvent,
+    offers: mockEvent.offers.map((id) => {
+      const offer = getMockOffersByType(mockEvent).find(
+        (mockOffer) => mockOffer.id === id,
+      );
+      return offer;
+    }),
     id: nanoid(),
   };
 }

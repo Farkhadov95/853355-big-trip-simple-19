@@ -1,11 +1,11 @@
-import {render, RenderPosition} from '../framework/render.js';
-import { getMockOffersByType, updateItem} from '../utils.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import EmptyListView from '../view/list-empty-view.js';
 import EventPresenter from './event-presenter.js';
 import ListSortView from '../view/list-sort-view.js';
-import { SortType } from '../const.js';
-import { sortEventsByDay, sortEventsByPrice } from '../utils.js';
-import { getRandomPoint } from '../mock/events.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
+import { sortEventsByDay, sortEventsByPrice } from '../utils/utils.js';
+import NewEventPresenter from './new-event-presenter.js';
+import { filter } from '../utils/filter.js';
 
 export default class ListPresenter {
   #eventListComponent = null;
@@ -13,131 +13,158 @@ export default class ListPresenter {
   #listSortComponent = null;
   #eventsListContainer = null;
   #eventsModel = null;
-  #events = [];
-  #initEvent = getRandomPoint();
+  #filterModel = null;
   #eventsPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
-  #sourcedListEvents = [];
-  #addEventButton = null;
-  #emptyListMessage = new EmptyListView();
+  #emptyListMessage = null;
+  #newEventPresenter = null;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor({eventsListContainer, eventsModel, eventListComponent, addEventButton}) {
+  constructor({eventsListContainer, eventsModel, filterModel, eventListComponent, onNewEventDestroy}) {
     this.#eventsListContainer = eventsListContainer;
     this.#eventsModel = eventsModel;
+    this.#filterModel = filterModel;
     this.#eventListComponent = eventListComponent;
-    this.#addEventButton = addEventButton;
+
+    this.#newEventPresenter = new NewEventPresenter({
+      eventsListContainer: this.#eventListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onModeChange: this.#handleModeChange,
+      onDestroy: onNewEventDestroy
+    });
+
+    this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+  }
+
+  get events() {
+    this.#filterType = this.#filterModel.filter;
+    const events = this.#eventsModel.events;
+    const filteredEvents = filter[this.#filterType](events);
+
+    switch (this.#currentSortType) {
+      case SortType.DAY:
+        return filteredEvents.sort(sortEventsByDay);
+      case SortType.PRICE:
+        return filteredEvents.sort(sortEventsByPrice);
+    }
+
+    return filteredEvents;
   }
 
   init() {
-    this.#events = [...this.#eventsModel.events];
-    this.#sourcedListEvents = [...this.#eventsModel.events];
-
-    this.#renderSortList();
-
-    this.#renderAddEvent(this.#initEvent);
-
-    render(this.#eventListComponent, this.#eventsListContainer);
-
-    if (this.#events.length === 0) {
-      render(this.#emptyListMessage, this.#eventListComponent.element);
-    }
-
-    this.#renderAllEvents();
+    this.#renderList();
   }
 
-  #renderAllEvents() {
-    for (const event of this.#events) {
-      const eventWithSelectedOffers = {
-        ...event,
-        offers: event.offers.map((id) => {
-          const offer = getMockOffersByType(event).find(
-            (mockOffer) => mockOffer.id === id,
-          );
-          return offer;
-        }),
-      };
-
-      this.#renderListItem(eventWithSelectedOffers);
-    }
+  createEvent() {
+    this.#currentSortType = SortType.DEFAULT;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newEventPresenter.init();
   }
+
+  #handleModeChange = () => {
+    this.#newEventPresenter.destroy();
+    this.#eventsPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this.#eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this.#eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this.#eventsModel.deleteEvent(updateType, update);
+        break;
+    }
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#eventsPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearList();
+        this.#renderList();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearList({resetSortType: true});
+        this.#renderList();
+        break;
+    }
+  };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
     }
-    this.#sortEvents(sortType);
+    this.#currentSortType = sortType;
     this.#clearList();
-    this.#renderAllEvents();
+    this.#renderList();
   };
 
   #renderSortList() {
     this.#listSortComponent = new ListSortView({
+      currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
 
     render(this.#listSortComponent, this.#eventsListContainer, RenderPosition.AFTERBEGIN);
   }
 
-  #handleModeChange = () => {
-    this.#eventsPresenters.forEach((presenter) => presenter.resetView());
-  };
-
-  #clearList() {
-    this.#eventsPresenters.forEach((presenter) => presenter.destroy());
-    this.#eventsPresenters.clear();
-  }
-
-  #handleEventChange = (updatedEvent) => {
-    this.#events = updateItem(this.#events, updatedEvent);
-    this.#sourcedListEvents = updateItem(this.#sourcedListEvents , updatedEvent);
-    this.#eventsPresenters.get(updatedEvent.id).init(updatedEvent);
-  };
-
-  #sortEvents(sortType) {
-    switch (sortType) {
-      case SortType.DAY:
-        this.#events.sort(sortEventsByDay);
-        break;
-      case SortType.PRICE:
-        this.#events.sort(sortEventsByPrice);
-        break;
-      default:
-
-        this.#events = [...this.#sourcedListEvents];
-    }
-
-    this.#currentSortType = sortType;
-  }
-
   #renderListItem(event) {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventListComponent.element,
-      onDataChange: this.#handleEventChange,
-      onModeChange: this.#handleModeChange,
-      onAddButtonClick: this.#addEventButton,
-      onEmptyList: this.#emplyListHandler
+      onDataChange: this.#handleViewAction,
+      onModeChange: this.#handleModeChange
     });
     eventPresenter.init(event);
     this.#eventsPresenters.set(event.id, eventPresenter);
   }
 
-  #renderAddEvent(event) {
-    const eventPresenter = new EventPresenter({
-      eventsListContainer: this.#eventListComponent.element,
-      onDataChange: this.#handleEventChange,
-      onModeChange: this.#handleModeChange,
-      onAddButtonClick: this.#addEventButton,
-      onEmptyList: this.#emplyListHandler
-    });
-    eventPresenter.initAddEvent(event);
-    this.#eventsPresenters.set(event.id, eventPresenter);
+
+  #renderAllEvents(allEvents = this.events) {
+    allEvents.forEach((event) => this.#renderListItem(event));
   }
 
-  #emplyListHandler = () => {
-    if ((this.#events.length === 0)) {
-      this.#emptyListMessage.element.remove();
-    }
-  };
+  #renderEmptyListMessage() {
+    this.#emptyListMessage = new EmptyListView();
+    render(this.#emptyListMessage, this.#eventListComponent.element);
+  }
 
+  #clearList({resetSortType = false} = {}) {
+    this.#newEventPresenter.destroy();
+    this.#eventsPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventsPresenters.clear();
+
+    remove(this.#listSortComponent);
+
+    if (this.#emptyListMessage) {
+      remove(this.#emptyListMessage);
+    }
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
+  }
+
+  #renderList() {
+    render(this.#eventListComponent, this.#eventsListContainer);
+
+    const events = this.events;
+    const eventsCount = events.length;
+
+    if ((eventsCount === 0)) {
+      this.#renderEmptyListMessage();
+      return;
+    }
+
+    render(this.#eventListComponent, this.#eventsListContainer);
+    this.#renderSortList();
+    this.#renderAllEvents(this.events);
+  }
 
 }

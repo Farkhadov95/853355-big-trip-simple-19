@@ -1,7 +1,7 @@
 import ListItemView from '../view/list-item-view.js';
 import EditEventView from '../view/edit-event-view.js';
-import AddEventView from '../view/add-event-view.js';
-import { remove, render, replace, RenderPosition } from '../framework/render.js';
+import { UserAction, UpdateType} from '../const.js';
+import { remove, render, replace } from '../framework/render.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -16,18 +16,14 @@ export default class EventPresenter {
   #event = null;
   #handleDataChange = null;
   #handleModeChange = null;
-  #handleAddButtonClick = null;
-  #emptyListHandler = null;
 
   #mode = Mode.DEFAULT;
 
 
-  constructor({eventsListContainer, onDataChange, onModeChange, onAddButtonClick, onEmptyList}) {
+  constructor({eventsListContainer, onDataChange, onModeChange}) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
-    this.#handleAddButtonClick = onAddButtonClick;
-    this.#emptyListHandler = onEmptyList;
   }
 
   init(event) {
@@ -38,14 +34,15 @@ export default class EventPresenter {
     const prevAddEventComponent = this.#addEventComponent;
 
     this.#listItemComponent = new ListItemView({
-      event,
+      event: this.#event,
       onEditClick: this.#handleEditClick
     });
 
     this.#editListItemComponent = new EditEventView({
-      event,
+      event: this.#event,
       onRollUpClick: this.#handleRollUpClick,
-      onFormSubmit: this.#handleFormSubmit
+      onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick
     });
 
     if (prevListItemComponent === null || prevEditListItemComponent === null) {
@@ -66,18 +63,6 @@ export default class EventPresenter {
     remove(prevAddEventComponent);
   }
 
-  initAddEvent(event) {
-    this.#handleAddButtonClick.addEventListener('click', () => {
-      this.#addEventComponent = new AddEventView({
-        event: event,
-        onCloseClick: this.#handleCloseClick,
-        onFormSubmit: this.#handleNewEventFormSubmit,
-      });
-      render(this.#addEventComponent, this.#eventsListContainer, RenderPosition.AFTERBEGIN);
-      document.addEventListener('keydown', this.#escKeyDownHandler);
-    });
-  }
-
   destroy() {
     remove(this.#listItemComponent);
     remove(this.#editListItemComponent);
@@ -85,6 +70,7 @@ export default class EventPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editListItemComponent.reset(this.#event);
       this.#replaceEditToEvent();
     }
   }
@@ -105,24 +91,27 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      if (this.#mode !== Mode.DEFAULT) {
-        this.#replaceEditToEvent();
-        return;
-      }
-      this.#handleCloseClick();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.#editListItemComponent.reset(this.#event);
+      this.#replaceEditToEvent();
     }
   };
 
-  #handleFormSubmit = (event) => {
-    this.#handleDataChange(event);
+  #handleFormSubmit = (update) => {
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      update
+    );
     this.#replaceEditToEvent();
   };
 
-  #handleNewEventFormSubmit = (event) => {
-    this.#handleDataChange(event);
-    this.#emptyListHandler();
-    this.#handleCloseClick();
+  #handleDeleteClick = (event) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
+    this.#replaceEditToEvent();
   };
 
   #handleEditClick = () => {
@@ -133,7 +122,4 @@ export default class EventPresenter {
     this.#replaceEditToEvent();
   };
 
-  #handleCloseClick = () => {
-    this.#addEventComponent.element.remove();
-  };
 }
