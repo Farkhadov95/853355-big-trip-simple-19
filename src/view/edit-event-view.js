@@ -77,7 +77,7 @@ function createEditItemTemplate(event) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1" required>
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -96,7 +96,7 @@ function createEditItemTemplate(event) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(basePrice))}">
         </div>
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
@@ -180,6 +180,13 @@ export default class EditEventView extends AbstractStatefulView{
     });
   };
 
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      basePrice: evt.target.value
+    });
+  };
+
   #deleteClickHandler = (evt) => {
     evt.preventDefault();
     this.#hadleDeleteClick(EditEventView.parseStateToEvent(this._state));
@@ -192,6 +199,9 @@ export default class EditEventView extends AbstractStatefulView{
 
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#typeChangeHandler);
+
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#priceChangeHandler);
 
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#deleteClickHandler);

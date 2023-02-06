@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDueDate } from '../utils/utils.js';
+import { humanizeEventDueDate, humanizeDateForList } from '../utils/utils.js';
 
 function createListItemTemplate(event) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = event;
@@ -18,7 +18,7 @@ function createListItemTemplate(event) {
   return (
     `<li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="2019-03-19">MAR 19</time>
+        <time class="event__date" datetime="${humanizeDateForList(dateFrom)}">${humanizeDateForList(dateFrom)}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>

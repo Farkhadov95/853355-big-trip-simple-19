@@ -6,8 +6,8 @@ import { nanoid } from 'nanoid';
 const mockPoints = [
   {
     'basePrice': 120,
-    'dateFrom': '2019-07-10T22:55:56.845Z',
-    'dateTo': '2019-07-11T11:22:13.375Z',
+    'dateFrom': '2023-07-22T22:55:56.845Z',
+    'dateTo': '2023-08-23T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': 1,
     'offers': [1, 2],
@@ -16,8 +16,8 @@ const mockPoints = [
 
   {
     'basePrice': 80,
-    'dateFrom': '2011-07-10T22:55:56.845Z',
-    'dateTo': '2019-07-11T11:22:13.375Z',
+    'dateFrom': '2024-11-12T22:55:56.845Z',
+    'dateTo': '2024-11-13T11:22:13.375Z',
     'destination': 'Chamonix',
     'id': 2,
     'offers': [1, 2],
@@ -25,8 +25,8 @@ const mockPoints = [
   },
   {
     'basePrice': 30,
-    'dateFrom': '2023-07-10T22:55:56.845Z',
-    'dateTo': '2024-07-11T11:22:13.375Z',
+    'dateFrom': '2023-01-18T22:55:56.845Z',
+    'dateTo': '2025-02-19T11:22:13.375Z',
     'destination': 'Geneva',
     'id': 3,
     'offers': [1],
@@ -34,8 +34,8 @@ const mockPoints = [
   },
   {
     'basePrice': 200,
-    'dateFrom': '2025-07-10T22:55:56.845Z',
-    'dateTo': '2025-07-11T11:22:13.375Z',
+    'dateFrom': '2025-03-09T22:55:56.845Z',
+    'dateTo': '2026-03-10T11:22:13.375Z',
     'destination': 'Geneva',
     'id': 4,
     'offers': [1, 2, 3],
@@ -43,8 +43,8 @@ const mockPoints = [
   },
   {
     'basePrice': 455,
-    'dateFrom': '2022-07-10T22:55:56.845Z',
-    'dateTo': '2031-07-11T11:22:13.375Z',
+    'dateFrom': '2022-04-06T22:55:56.845Z',
+    'dateTo': '2031-04-16T11:22:13.375Z',
     'destination': 'Amsterdam',
     'id': 5,
     'offers': [1],
