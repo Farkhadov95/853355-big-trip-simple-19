@@ -1,17 +1,24 @@
 import {render, remove, RenderPosition} from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import EmptyListView from '../view/list-empty-view.js';
 import EventPresenter from './event-presenter.js';
 import ListSortView from '../view/list-sort-view.js';
+import LoadingView from '../view/list-loading-view.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { sortEventsByDay, sortEventsByPrice } from '../utils/utils.js';
 import NewEventPresenter from './new-event-presenter.js';
 import { filter } from '../utils/filter.js';
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 export default class ListPresenter {
   #eventListComponent = null;
-
   #listSortComponent = null;
   #eventsListContainer = null;
+  #loadingComponent = new LoadingView();
   #eventsModel = null;
   #filterModel = null;
   #eventsPresenters = new Map();
@@ -19,6 +26,11 @@ export default class ListPresenter {
   #emptyListMessage = null;
   #newEventPresenter = null;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({eventsListContainer, eventsModel, filterModel, eventListComponent, onNewEventDestroy}) {
     this.#eventsListContainer = eventsListContainer;
@@ -67,18 +79,37 @@ export default class ListPresenter {
     this.#eventsPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsModel.updateEvent(updateType, update);
+        this.#eventsPresenters.get(update.id).setSaving();
+        try {
+          await this.#eventsModel.updateTask(updateType, update);
+        } catch(err) {
+          this.#eventsPresenters.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_EVENT:
-        this.#eventsModel.addEvent(updateType, update);
+        this.#newEventPresenter.setSaving();
+        try {
+          await this.#eventsModel.addTask(updateType, update);
+        } catch(err) {
+          this.#newEventPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_EVENT:
-        this.#eventsModel.deleteEvent(updateType, update);
+        this.#eventsPresenters.get(update.id).setDeleting();
+        try {
+          await this.#eventsModel.deleteTask(updateType, update);
+        } catch(err) {
+          this.#eventsPresenters.get(update.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -92,6 +123,11 @@ export default class ListPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearList({resetSortType: true});
+        this.#renderList();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderList();
         break;
     }
@@ -135,6 +171,10 @@ export default class ListPresenter {
     render(this.#emptyListMessage, this.#eventListComponent.element);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
   #clearList({resetSortType = false} = {}) {
     this.#newEventPresenter.destroy();
     this.#eventsPresenters.forEach((presenter) => presenter.destroy());
@@ -153,6 +193,11 @@ export default class ListPresenter {
 
   #renderList() {
     render(this.#eventListComponent, this.#eventsListContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     const events = this.events;
     const eventsCount = events.length;

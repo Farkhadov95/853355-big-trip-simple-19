@@ -1,19 +1,29 @@
 import he from 'he';
-import { getMockOffersByType, humanizeEventDueDate } from '../utils/utils.js';
-import { mockDestinations } from '../mock/events.js';
+import { humanizeEventDueDate } from '../utils/utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
-function createEditItemTemplate(event) {
-  const {basePrice, dateFrom, dateTo, destination, type} = event;
+function createEditItemTemplate(data) {
+  const {
+    basePrice,
+    dateFrom,
+    dateTo,
+    offers,
+    destination,
+    type,
+    isSaving,
+    isDeleting,
+    isDisabled
+  } = data;
+
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
 
-  const destinationDescription = mockDestinations.find((mock) => mock.name === destination).description;
-  const mockOffersByType = getMockOffersByType(event);
-
-  const offersTemplate = mockOffersByType.map((offer) => (
+  const offersTemplate = offers.map((offer) => (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" ${event.offers.includes(offer) ? 'checked' : ''}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}"
+       type="checkbox" name="${offer.title}" 
+       ${data.offers.includes(offer) ? 'checked' : ''}
+       ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -32,7 +42,7 @@ function createEditItemTemplate(event) {
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
           <div class="event__type-list">
-            <fieldset class="event__type-group">
+            <fieldset class="event__type-group" ${isDisabled ? 'disabled' : ''}>
               <legend class="visually-hidden">Event type</legend>
               <div class="event__type-item">
                 <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${type === 'taxi' ? 'checked' : ''}>
@@ -77,7 +87,10 @@ function createEditItemTemplate(event) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1" required>
+          <input class="event__input  event__input--destination"
+           id="event-destination-1" type="text"
+            name="event-destination" 
+            value="${destination.name}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -86,20 +99,20 @@ function createEditItemTemplate(event) {
         </div>
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedDateFrom}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedDateFrom}" ${isDisabled ? 'disabled' : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedDateTo}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedDateTo}" ${isDisabled ? 'disabled' : ''}>
         </div>
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(basePrice))}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(basePrice))}" ${isDisabled ? 'disabled' : ''}>
         </div>
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -114,7 +127,7 @@ function createEditItemTemplate(event) {
         </section>
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destinationDescription}</p>
+          <p class="event__destination-description">${destination.description}</p>
         </section>
       </section>
     </form>`
@@ -158,11 +171,19 @@ export default class EditEventView extends AbstractStatefulView{
   };
 
   static parseEventToState(event) {
-    return event;
+    return {
+      ...event,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToEvent(state) {
-    const event = state;
+    const event = {state};
+    delete event.isDisabled;
+    delete event.isSaving;
+    delete event.isDeleting;
     return event;
   }
 

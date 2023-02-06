@@ -1,12 +1,30 @@
 import he from 'he';
-import { mockDestinations } from '../mock/events.js';
+// import { mockDestinations } from '../mock/events.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getMockOffersByType, humanizeEventDueDate } from '../utils/utils.js';
-import { getRandomPoint } from '../mock/events.js';
+import {humanizeEventDueDate } from '../utils/utils.js';
+// import { getRandomPoint } from '../mock/events.js';
 
-const initEvent = getRandomPoint();
+const initEvent = {
+  'basePrice': 50,
+  'dateFrom': '2018-07-10T22:55:56.845Z',
+  'dateTo': '2019-07-11T11:22:13.375Z',
+  'destination': {
+    'id': 1,
+    'description': 'Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.',
+    'name': 'Geneva',
+    'pictures': [
+      {
+        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'description': 'Geneva is a gorgeous city, one that’s filled with mountains of chocolate.'
+      }
+    ]
+  },
+  'id': 1,
+  'offers':  [{'id': 1, 'title': 'bus - offer 1', 'price': 50 }],
+  'type' : 'Bus',
+};
 
-function createOffersTemplate(offers) {
+function createOffersTemplate(offers, isDisabled) {
   if (offers.length !== 0) {
     return `
     <section class="event__section  event__section--offers">
@@ -15,7 +33,7 @@ function createOffersTemplate(offers) {
       <!-- Offers -->
     ${offers.map((offer) => (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" ${isDisabled ? 'disabled' : ''}>
         <label class="event__offer-label" for="event-offer-${offer.id}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -29,12 +47,21 @@ function createOffersTemplate(offers) {
   return '';
 }
 
-function createAddItemTemplate(event) {
-  const {basePrice, dateFrom, dateTo, destination, type} = event;
+function createAddItemTemplate(data) {
+  const {
+    basePrice,
+    dateFrom,
+    dateTo,
+    offers,
+    destination,
+    type,
+    isDisabled,
+    isSaving,
+    isDeleting
+  } = data;
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
-  const offers = getMockOffersByType(event);
-  const destinationDescription = mockDestinations.find((mock) => mock.name === destination).description;
+  const destinationDescription = destination.description;
 
   return (
     `<li class="trip-events__item">
@@ -48,7 +75,7 @@ function createAddItemTemplate(event) {
               <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
               <div class="event__type-list">
-                <fieldset class="event__type-group">
+                <fieldset class="event__type-group" ${isDisabled ? 'disabled' : ''}>
                   <legend class="visually-hidden">Event type</legend>
 
                   <div class="event__type-item">
@@ -103,7 +130,9 @@ function createAddItemTemplate(event) {
               <label class="event__label  event__type-output" for="event-destination-1">
                 ${type}
               </label>
-              <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1" required>
+              <input class="event__input  event__input--destination" id="event-destination-1"
+               type="text" name="event-destination" value="${destination.name}"
+                list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
               <datalist id="destination-list-1">
                 <option value="Amsterdam"></option>
                 <option value="Geneva"></option>
@@ -113,10 +142,10 @@ function createAddItemTemplate(event) {
 
             <div class="event__field-group  event__field-group--time">
               <label class="visually-hidden" for="event-start-time-1">From</label>
-              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedDateFrom}">
+              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedDateFrom}" ${isDisabled ? 'disabled' : ''}>
               &mdash;
               <label class="visually-hidden" for="event-end-time-1">To</label>
-              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedDateTo}">
+              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedDateTo}" ${isDisabled ? 'disabled' : ''}>
             </div>
 
             <div class="event__field-group  event__field-group--price">
@@ -124,11 +153,11 @@ function createAddItemTemplate(event) {
                 <span class="visually-hidden">Price</span>
                 &euro;
               </label>
-              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(basePrice))}">
+              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(basePrice))}" ${isDisabled ? 'disabled' : ''}>
             </div>
 
-            <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-            <button class="event__reset-btn" type="reset">Cancel</button>
+            <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'saving...' : 'save'}</button>
+            <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Canceling...' : 'Cancel'}</button>
           </header>
           <section class="event__details">
               ${createOffersTemplate(offers)}
@@ -158,7 +187,7 @@ export default class AddEventView extends AbstractStatefulView{
 
   constructor({event = initEvent, onCloseClick, onFormSubmit}) {
     super();
-    this._setState(event);
+    this._setState(AddEventView.parseEventToState(event));
 
     this.#handleClickClose = onCloseClick;
     this.#handleFormSubmit = onFormSubmit;
@@ -177,7 +206,7 @@ export default class AddEventView extends AbstractStatefulView{
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this._state);
+    this.#handleFormSubmit(AddEventView.parseStateToEvent(this._state));
   };
 
   #typeChangeHandler = (evt) => {
@@ -222,6 +251,24 @@ export default class AddEventView extends AbstractStatefulView{
 
     this.element.querySelector('.event__available-offers')
       .addEventListener('change', this.#offersChangeHandler);
+  }
+
+  static parseEventToState(event) {
+    return {...event,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  }
+
+  static parseStateToEvent(state) {
+    const event = {...state};
+
+    delete event.isDisabled;
+    delete event.isSaving;
+    delete event.isDeleting;
+
+    return event;
   }
 
 }

@@ -55,7 +55,9 @@ export default class EventPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#editListItemComponent, prevEditListItemComponent);
+      // replace(this.#editListItemComponent, prevEditListItemComponent);
+      replace(this.#listItemComponent, prevEditListItemComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevListItemComponent);
@@ -66,6 +68,41 @@ export default class EventPresenter {
   destroy() {
     remove(this.#listItemComponent);
     remove(this.#editListItemComponent);
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editListItemComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editListItemComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#listItemComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editListItemComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editListItemComponent.shake(resetFormState);
   }
 
   resetView() {
@@ -102,7 +139,7 @@ export default class EventPresenter {
       UpdateType.MINOR,
       update
     );
-    this.#replaceEditToEvent();
+    // this.#replaceEditToEvent();
   };
 
   #handleDeleteClick = (event) => {

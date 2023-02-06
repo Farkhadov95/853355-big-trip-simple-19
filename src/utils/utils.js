@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { mockOffers } from '../mock/events';
+// import { mockOffers } from '../mock/events';
 
 const DATE_FORMAT = 'DD/MM/YY HH:MM';
 
@@ -18,8 +18,8 @@ function humanizeDateForList(dueDate) {
   return dueDate ? dayjs(dueDate).format(DATE_FORMAT_LIST) : '';
 }
 
-function getMockOffersByType(point) {
-  const offerType = mockOffers.find((offer) => offer.type === point.type).offers;
+function getOffersByType(point, allOffers) {
+  const offerType = allOffers.find((offer) => offer.type === point.type).offers;
   return offerType;
 }
 
@@ -59,6 +59,6 @@ function isEventStarted(dateFrom) {
 
 
 export {getRandomArrayElement, humanizeEventDueDate,
-  getMockOffersByType, sortEventsByDay, sortEventsByPrice,
+  getOffersByType, sortEventsByDay, sortEventsByPrice,
   isDatesEqual, isEventStarted, humanizeDateForList
 };
