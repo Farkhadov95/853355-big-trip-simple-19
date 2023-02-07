@@ -67,7 +67,6 @@ export default class EventsApiService extends ApiService {
       'base_price' : event.basePrice,
       'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : null,
       'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : null,
-      id: String(event.id),
       offers: offersID,
       destination: event.destination.id
     };
@@ -75,6 +74,7 @@ export default class EventsApiService extends ApiService {
     delete adaptedEvent.basePrice;
     delete adaptedEvent.dateTo;
     delete adaptedEvent.dateFrom;
+    delete adaptedEvent.id;
 
     delete adaptedEvent.isDeleting;
     delete adaptedEvent.isSaving;

@@ -29,7 +29,6 @@ export default class EventsModel extends Observable {
         this.#allOffers = offers;
         this.#allDestinations = destinations;
         this.#events = events.map(this.#adaptToClient);
-        // console.log(1);
       });
     } catch(err) {
       this.#events = [];
@@ -39,9 +38,7 @@ export default class EventsModel extends Observable {
   }
 
   async updateEvent(updateType, update) {
-    // console.log(this.#events);
     const index = this.#events.findIndex((event) => event.id === update.id);
-    // console.log(index);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting event');

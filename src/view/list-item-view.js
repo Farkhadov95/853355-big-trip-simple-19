@@ -3,7 +3,6 @@ import { humanizeEventDueDate, humanizeDateForList } from '../utils/utils.js';
 
 function createListItemTemplate(data) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = data;
-
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
 

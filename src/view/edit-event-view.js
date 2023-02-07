@@ -225,21 +225,38 @@ export default class EditEventView extends AbstractStatefulView{
     this.#hadleDeleteClick(EditEventView.parseStateToEvent(this._state));
   };
 
-  #dateChangeHandler = ([userDateFrom, userDateTo]) => {
+  #dateFromChangeHandler = ([userDateFrom]) => {
     this.updateElement({
       dateFrom: userDateFrom,
+    });
+  };
+
+  #dateToChangeHandler = ([userDateTo]) => {
+    this.updateElement({
       dateTo: userDateTo
     });
   };
 
-  #setDatePicker() {
+  #setDateFromPicker() {
     this.#datepicker = flatpickr(
-      this.element.querySelector('.event__field-group--time'),
+      this.element.querySelector('#event-start-time-1'),
       {
-        mode: 'range',
-        dateFormat: 'j F',
-        defaultDate: [this._state.dateFrom, this._state.dateTo],
-        onChange: this.#dateChangeHandler,
+        dateFormat: 'd/m/y h:i',
+        enableTime: true,
+        defaultDate: [this._state.dateFrom],
+        onChange: this.#dateFromChangeHandler,
+      }
+    );
+  }
+
+  #setDateToPicker() {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/y h:i',
+        enableTime: true,
+        defaultDate: [this._state.dateTo],
+        onChange: this.#dateToChangeHandler,
       }
     );
   }
@@ -261,6 +278,7 @@ export default class EditEventView extends AbstractStatefulView{
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
-    this.#setDatePicker();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   }
 }

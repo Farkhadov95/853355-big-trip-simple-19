@@ -3,7 +3,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {humanizeEventDueDate } from '../utils/utils.js';
 
 const initEvent = {
-  'basePrice': 0,
+  'basePrice': 10,
   'dateFrom': new Date('2022-01-26'),
   'dateTo': new Date('2022-01-27'),
   'destination': {
@@ -19,7 +19,7 @@ const initEvent = {
   },
   'id': '1',
   'offers':  [{'id': 1, 'title': 'bus - offer 1', 'price': 50 }, {'id': 2, 'title': 'bus - offer 2', 'price': 35 }],
-  'type' : 'Bus',
+  'type' : 'bus',
 };
 
 function createOffersTemplate(offers, isDisabled) {
