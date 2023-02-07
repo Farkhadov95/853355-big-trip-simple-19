@@ -16,14 +16,16 @@ export default class EventPresenter {
   #event = null;
   #handleDataChange = null;
   #handleModeChange = null;
+  #destinationsList = [];
 
   #mode = Mode.DEFAULT;
 
 
-  constructor({eventsListContainer, onDataChange, onModeChange}) {
+  constructor({eventsListContainer, onDataChange, onModeChange, destinationsList}) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#destinationsList = destinationsList;
   }
 
   init(event) {
@@ -42,7 +44,8 @@ export default class EventPresenter {
       event: this.#event,
       onRollUpClick: this.#handleRollUpClick,
       onFormSubmit: this.#handleFormSubmit,
-      onDeleteClick: this.#handleDeleteClick
+      onDeleteClick: this.#handleDeleteClick,
+      destinationsList: this.#destinationsList
     });
 
     if (prevListItemComponent === null || prevEditListItemComponent === null) {

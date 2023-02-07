@@ -18,6 +18,10 @@ export default class EventsModel extends Observable {
     return this.#events;
   }
 
+  get allDestinations() {
+    return this.#allDestinations;
+  }
+
   async init() {
     try {
       await Promise.all([

@@ -60,7 +60,6 @@ export default class ListPresenter {
       case SortType.PRICE:
         return filteredEvents.sort(sortEventsByPrice);
     }
-
     return filteredEvents;
   }
 
@@ -155,7 +154,8 @@ export default class ListPresenter {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
-      onModeChange: this.#handleModeChange
+      onModeChange: this.#handleModeChange,
+      destinationsList: this.#eventsModel.allDestinations
     });
     eventPresenter.init(event);
     this.#eventsPresenters.set(event.id, eventPresenter);

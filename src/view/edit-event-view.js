@@ -5,7 +5,7 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createEditItemTemplate(data) {
+function createEditItemTemplate(data, destinationsList) {
   const {
     basePrice,
     dateFrom,
@@ -17,6 +17,10 @@ function createEditItemTemplate(data) {
     isDeleting,
     isDisabled
   } = data;
+
+  const destinationNames = destinationsList.map((dest) => (
+    `<option value="${dest.name}"></option>`
+  )).join('');
 
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
@@ -95,11 +99,9 @@ function createEditItemTemplate(data) {
           <input class="event__input  event__input--destination"
            id="event-destination-1" type="text"
             name="event-destination" 
-            value="${destination.name}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
+            value="${destination.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${destinationNames}
           </datalist>
         </div>
         <div class="event__field-group  event__field-group--time">
@@ -144,20 +146,22 @@ export default class EditEventView extends AbstractStatefulView{
   #handleFormSubmit = null;
   #hadleDeleteClick = null;
   #datepicker = null;
+  #destionationList = [];
 
-  constructor({event, onRollUpClick, onFormSubmit, onDeleteClick}) {
+  constructor({event, onRollUpClick, onFormSubmit, onDeleteClick, destinationsList}) {
     super();
     this._setState(EditEventView.parseEventToState(event));
 
     this.#handleRollUpClose = onRollUpClick;
     this.#handleFormSubmit = onFormSubmit;
     this.#hadleDeleteClick = onDeleteClick;
+    this.#destionationList = destinationsList;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditItemTemplate(this._state);
+    return createEditItemTemplate(this._state, this.#destionationList);
   }
 
   removeElement() {
@@ -209,14 +213,14 @@ export default class EditEventView extends AbstractStatefulView{
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      destination: evt.target.value
+      destination: this.#destionationList.find((dest) => dest.name === evt.target.value)
     });
   };
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      basePrice: evt.target.value
+      basePrice: Number(evt.target.value)
     });
   };
 
