@@ -9,20 +9,20 @@ export default class NewEventPresenter {
   #handleDataChange = null;
   #handleDestroy = null;
 
-  constructor({eventsListContainer, onDataChange, onDestroy}) {
+  constructor({eventsListContainer, onDataChange, onDestroy }) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
   }
 
-  init() {
+  init(destinationsList) {
     if (this.#addEventComponent !== null) {
       return;
     }
-
     this.#addEventComponent = new AddEventView({
       onCloseClick: this.#handleDeleteClick,
       onFormSubmit: this.#handleFormSubmit,
+      destinationsList,
     });
 
     render(this.#addEventComponent, this.#eventsListContainer, RenderPosition.AFTERBEGIN);
@@ -60,7 +60,6 @@ export default class NewEventPresenter {
   }
 
   #handleFormSubmit = (event) => {
-    // console.log(event);
     this.#handleDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,

@@ -1,6 +1,9 @@
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {humanizeEventDueDate } from '../utils/utils.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const initEvent = {
   'basePrice': 10,
@@ -45,7 +48,7 @@ function createOffersTemplate(offers, isDisabled) {
   return '';
 }
 
-function createAddItemTemplate(data) {
+function createAddItemTemplate(data, destinationsList) {
   const {
     basePrice,
     dateFrom,
@@ -58,7 +61,12 @@ function createAddItemTemplate(data) {
     isDeleting
   } = data;
 
-  // console.log(data);
+
+  const destinationNames = destinationsList.map((dest) => (
+    `<option value="${dest.name}"></option>`
+  )).join('');
+
+
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
   const destinationDescription = destination.description;
@@ -134,9 +142,7 @@ function createAddItemTemplate(data) {
                type="text" name="event-destination" value="${destination.name}"
                 list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
               <datalist id="destination-list-1">
-                <option value="Amsterdam"></option>
-                <option value="Geneva"></option>
-                <option value="Chamonix"></option>
+                ${destinationNames}
               </datalist>
             </div>
 
@@ -184,19 +190,31 @@ function createAddItemTemplate(data) {
 export default class AddEventView extends AbstractStatefulView{
   #handleClickClose = null;
   #handleFormSubmit = null;
+  #destinationList = null;
+  #datepicker = null;
 
-  constructor({event = initEvent, onCloseClick, onFormSubmit}) {
+  constructor({event = initEvent, onCloseClick, onFormSubmit, destinationsList}) {
     super();
     this._setState(AddEventView.parseEventToState(event));
 
     this.#handleClickClose = onCloseClick;
     this.#handleFormSubmit = onFormSubmit;
+    this.#destinationList = destinationsList;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createAddItemTemplate(this._state);
+    return createAddItemTemplate(this._state, this.#destinationList);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
   }
 
   #closeClickHandler = (evt) => {
@@ -206,7 +224,6 @@ export default class AddEventView extends AbstractStatefulView{
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    // console.log(AddEventView.parseStateToEvent(this._state));
     this.#handleFormSubmit(AddEventView.parseStateToEvent(this._state));
   };
 
@@ -220,14 +237,14 @@ export default class AddEventView extends AbstractStatefulView{
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      destination: evt.target.value
+      destination: this.#destinationList.find((dest) => dest.name === evt.target.value)
     });
   };
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      basePrice: evt.target.value
+      basePrice: Number(evt.target.value)
     });
   };
 
@@ -235,6 +252,42 @@ export default class AddEventView extends AbstractStatefulView{
     evt.preventDefault();
     // console.log((evt.target).checked);
   };
+
+  #dateFromChangeHandler = ([userDateFrom]) => {
+    this.updateElement({
+      dateFrom: userDateFrom,
+    });
+  };
+
+  #dateToChangeHandler = ([userDateTo]) => {
+    this.updateElement({
+      dateTo: userDateTo
+    });
+  };
+
+  #setDateFromPicker() {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'd/m/y h:i',
+        enableTime: true,
+        defaultDate: [this._state.dateFrom],
+        onChange: this.#dateFromChangeHandler,
+      }
+    );
+  }
+
+  #setDateToPicker() {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/y h:i',
+        enableTime: true,
+        defaultDate: [this._state.dateTo],
+        onChange: this.#dateToChangeHandler,
+      }
+    );
+  }
 
   _restoreHandlers() {
     this.element.querySelector('.event__reset-btn')
@@ -252,6 +305,9 @@ export default class AddEventView extends AbstractStatefulView{
 
     this.element.querySelector('.event__available-offers')
       .addEventListener('change', this.#offersChangeHandler);
+
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   }
 
   static parseEventToState(event) {

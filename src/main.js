@@ -27,8 +27,6 @@ const newEventButtonComponent = new NewEventButtonView({
   onClick: handleNewEventButtonClick
 });
 
-// render(newEventButtonComponent, tripMainContainer);
-
 const filterPresenter = new FilterPresenter({
   filtersContainer,
   filterModel,
