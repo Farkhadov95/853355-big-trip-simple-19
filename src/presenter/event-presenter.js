@@ -148,7 +148,6 @@ export default class EventPresenter {
       UpdateType.MINOR,
       event,
     );
-    this.#replaceEditToEvent();
   };
 
   #handleEditClick = () => {

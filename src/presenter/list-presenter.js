@@ -84,27 +84,27 @@ export default class ListPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsPresenters.get(update.id).setSaving();
+        this.#eventsPresenters.get(update.state.id).setSaving();
         try {
-          await this.#eventsModel.updateTask(updateType, update);
+          await this.#eventsModel.updateEvent(updateType, update.state);
         } catch(err) {
-          this.#eventsPresenters.get(update.id).setAborting();
+          this.#eventsPresenters.get(update.state.id).setAborting();
         }
         break;
       case UserAction.ADD_EVENT:
         this.#newEventPresenter.setSaving();
         try {
-          await this.#eventsModel.addTask(updateType, update);
+          await this.#eventsModel.addEvent(updateType, update);
         } catch(err) {
           this.#newEventPresenter.setAborting();
         }
         break;
       case UserAction.DELETE_EVENT:
-        this.#eventsPresenters.get(update.id).setDeleting();
+        this.#eventsPresenters.get(update.state.id).setDeleting();
         try {
-          await this.#eventsModel.deleteTask(updateType, update);
+          await this.#eventsModel.deleteEvent(updateType, update.state);
         } catch(err) {
-          this.#eventsPresenters.get(update.id).setAborting();
+          this.#eventsPresenters.get(update.state.id).setAborting();
         }
         break;
     }

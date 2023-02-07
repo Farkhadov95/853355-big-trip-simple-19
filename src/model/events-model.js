@@ -39,7 +39,9 @@ export default class EventsModel extends Observable {
   }
 
   async updateEvent(updateType, update) {
+    // console.log(this.#events);
     const index = this.#events.findIndex((event) => event.id === update.id);
+    // console.log(index);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting event');
@@ -61,13 +63,14 @@ export default class EventsModel extends Observable {
   }
 
   async addEvent(updateType, update) {
+    // console.log(update);
     try {
       const response = await this.#eventsApiService.addEvent(update);
       const newEvent = this.#adaptToClient(response);
       this.#events = [newEvent, ...this.#events];
       this._notify(updateType, newEvent);
     } catch(err) {
-      throw new Error('Can\'t add task');
+      throw new Error('Can\'t add event');
     }
   }
 
@@ -75,7 +78,7 @@ export default class EventsModel extends Observable {
     const index = this.#events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t delete unexisting task');
+      throw new Error('Can\'t delete unexisting event');
     }
 
     try {
@@ -110,7 +113,6 @@ export default class EventsModel extends Observable {
     delete adaptedEvent['date_from'];
     delete adaptedEvent['date_to'];
 
-    // console.log(adaptedEvent);
     return adaptedEvent;
   };
 }

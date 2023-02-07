@@ -60,6 +60,7 @@ export default class NewEventPresenter {
   }
 
   #handleFormSubmit = (event) => {
+    // console.log(event);
     this.#handleDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,

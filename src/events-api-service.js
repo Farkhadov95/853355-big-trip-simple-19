@@ -59,19 +59,28 @@ export default class EventsApiService extends ApiService {
   }
 
   #adaptToServer(event) {
-    const adaptedEVent = {...event,
+    const offersID = [];
+    event.offers.forEach((offer) => offersID.push(offer.id));
+
+    const adaptedEvent = {
+      ...event,
       'base_price' : event.basePrice,
       'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : null,
       'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : null,
-      offers: event.offers.forEach((offer) => offer.id),
-      destinaion: event.destinaion.id
+      id: String(event.id),
+      offers: offersID,
+      destination: event.destination.id
     };
 
-    delete adaptedEVent.basePrice;
-    delete adaptedEVent.dateTo;
-    delete adaptedEVent.dateFrom;
+    delete adaptedEvent.basePrice;
+    delete adaptedEvent.dateTo;
+    delete adaptedEvent.dateFrom;
 
-    return adaptedEVent;
+    delete adaptedEvent.isDeleting;
+    delete adaptedEvent.isSaving;
+    delete adaptedEvent.isDisabled;
+
+    return adaptedEvent;
   }
 
 }

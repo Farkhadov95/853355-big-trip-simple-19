@@ -18,7 +18,9 @@ function createEditItemTemplate(data) {
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
 
-  const offersTemplate = offers.map((offer) => (
+  const filteredOffers = offers.filter((x) => (x) !== undefined);
+
+  const offersTemplate = filteredOffers.map((offer) => (
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}"
        type="checkbox" name="${offer.title}" 
@@ -181,9 +183,6 @@ export default class EditEventView extends AbstractStatefulView{
 
   static parseStateToEvent(state) {
     const event = {state};
-    delete event.isDisabled;
-    delete event.isSaving;
-    delete event.isDeleting;
     return event;
   }
 

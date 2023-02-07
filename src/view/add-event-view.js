@@ -1,13 +1,11 @@
 import he from 'he';
-// import { mockDestinations } from '../mock/events.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {humanizeEventDueDate } from '../utils/utils.js';
-// import { getRandomPoint } from '../mock/events.js';
 
 const initEvent = {
-  'basePrice': 50,
-  'dateFrom': '2018-07-10T22:55:56.845Z',
-  'dateTo': '2019-07-11T11:22:13.375Z',
+  'basePrice': 0,
+  'dateFrom': new Date('2022-01-26'),
+  'dateTo': new Date('2022-01-27'),
   'destination': {
     'id': 1,
     'description': 'Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.',
@@ -15,12 +13,12 @@ const initEvent = {
     'pictures': [
       {
         'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
-        'description': 'Geneva is a gorgeous city, one that’s filled with mountains of chocolate.'
+        'description': 'Geneva is a gorgeous city, one thats filled with mountains of chocolate.'
       }
     ]
   },
-  'id': 1,
-  'offers':  [{'id': 1, 'title': 'bus - offer 1', 'price': 50 }],
+  'id': '1',
+  'offers':  [{'id': 1, 'title': 'bus - offer 1', 'price': 50 }, {'id': 2, 'title': 'bus - offer 2', 'price': 35 }],
   'type' : 'Bus',
 };
 
@@ -59,6 +57,8 @@ function createAddItemTemplate(data) {
     isSaving,
     isDeleting
   } = data;
+
+  // console.log(data);
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
   const destinationDescription = destination.description;
@@ -206,6 +206,7 @@ export default class AddEventView extends AbstractStatefulView{
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+    // console.log(AddEventView.parseStateToEvent(this._state));
     this.#handleFormSubmit(AddEventView.parseStateToEvent(this._state));
   };
 
@@ -264,9 +265,9 @@ export default class AddEventView extends AbstractStatefulView{
   static parseStateToEvent(state) {
     const event = {...state};
 
-    delete event.isDisabled;
-    delete event.isSaving;
-    delete event.isDeleting;
+    // delete event.isDisabled;
+    // delete event.isSaving;
+    // delete event.isDeleting;
 
     return event;
   }
