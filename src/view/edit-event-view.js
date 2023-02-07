@@ -1,6 +1,9 @@
 import he from 'he';
 import { humanizeEventDueDate } from '../utils/utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createEditItemTemplate(data) {
   const {
@@ -140,6 +143,7 @@ export default class EditEventView extends AbstractStatefulView{
   #handleRollUpClose = null;
   #handleFormSubmit = null;
   #hadleDeleteClick = null;
+  #datepicker = null;
 
   constructor({event, onRollUpClick, onFormSubmit, onDeleteClick}) {
     super();
@@ -154,6 +158,15 @@ export default class EditEventView extends AbstractStatefulView{
 
   get template() {
     return createEditItemTemplate(this._state);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
   }
 
   reset(event) {
@@ -212,6 +225,25 @@ export default class EditEventView extends AbstractStatefulView{
     this.#hadleDeleteClick(EditEventView.parseStateToEvent(this._state));
   };
 
+  #dateChangeHandler = ([userDateFrom, userDateTo]) => {
+    this.updateElement({
+      dateFrom: userDateFrom,
+      dateTo: userDateTo
+    });
+  };
+
+  #setDatePicker() {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('.event__field-group--time'),
+      {
+        mode: 'range',
+        dateFormat: 'j F',
+        defaultDate: [this._state.dateFrom, this._state.dateTo],
+        onChange: this.#dateChangeHandler,
+      }
+    );
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#closeClickHandler);
@@ -228,5 +260,7 @@ export default class EditEventView extends AbstractStatefulView{
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
+
+    this.#setDatePicker();
   }
 }

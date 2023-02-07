@@ -155,6 +155,7 @@ export default class EventPresenter {
   };
 
   #handleRollUpClick = () => {
+    this.#editListItemComponent.reset(this.#event);
     this.#replaceEditToEvent();
   };
 

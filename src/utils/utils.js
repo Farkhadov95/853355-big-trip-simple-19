@@ -41,7 +41,7 @@ function getWeightForNull(dateA, dateB) {
 
 function sortEventsByDay(eventA, eventB) {
   const weight = getWeightForNull(eventA.dateFrom, eventB.dateFrom);
-  return weight ?? dayjs(eventB.dateFrom).diff(dayjs(eventA.dateFrom));
+  return weight ?? dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom));
 }
 
 function sortEventsByPrice(eventA, eventB) {
