@@ -5,7 +5,7 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createEditItemTemplate(data, destinationsList) {
+function createEditItemTemplate(data, destinationsList, offersList) {
   const {
     basePrice,
     dateFrom,
@@ -26,20 +26,35 @@ function createEditItemTemplate(data, destinationsList) {
   const formattedDateTo = humanizeEventDueDate(dateTo);
 
   const filteredOffers = offers.filter((x) => (x) !== undefined);
+  const availableOffersByType = offersList.find((offer) => offer.type === type).offers;
+  const filteredOffersIDs = [];
+  filteredOffers.forEach((offer) => filteredOffersIDs.push(offer.id));
 
-  const offersTemplate = filteredOffers.map((offer) => (
+  function createOffersTemplate() {
+    if (offers.length !== 0) {
+      return `
+      <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        <!-- Offers -->
+      ${availableOffersByType.map((offer) => (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}"
-       type="checkbox" name="${offer.title}" 
-       ${data.offers.includes(offer) ? 'checked' : ''}
-       ${isDisabled ? 'disabled' : ''}>
-      <label class="event__offer-label" for="event-offer-${offer.id}">
-        <span class="event__offer-title">${offer.title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`
-  )).join('');
+          <input class="event__offer-checkbox  visually-hidden" id="${offer.id}"
+           type="checkbox" name="${offer.title}" 
+           ${filteredOffersIDs.includes(offer.id) ? 'checked' : ''}
+           ${isDisabled ? 'disabled' : ''}>
+          <label class="event__offer-label" for="${offer.id}">
+            <span class="event__offer-title">${offer.title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </label>
+        </div>`
+  )).join('')}
+      </div>
+      </section>`;
+    }
+    return '';
+  }
 
   return (
     `<form class="event event--edit" action="#" method="post">
@@ -125,13 +140,7 @@ function createEditItemTemplate(data, destinationsList) {
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          <div class="event__available-offers">
-          <!-- Offers -->
-          ${offersTemplate}
-          </div>
-        </section>
+          ${createOffersTemplate()}
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${destination.description}</p>
@@ -147,8 +156,9 @@ export default class EditEventView extends AbstractStatefulView{
   #hadleDeleteClick = null;
   #datepicker = null;
   #destionationList = [];
+  #offersList = [];
 
-  constructor({event, onRollUpClick, onFormSubmit, onDeleteClick, destinationsList}) {
+  constructor({event, onRollUpClick, onFormSubmit, onDeleteClick, destinationsList, offersList}) {
     super();
     this._setState(EditEventView.parseEventToState(event));
 
@@ -156,12 +166,13 @@ export default class EditEventView extends AbstractStatefulView{
     this.#handleFormSubmit = onFormSubmit;
     this.#hadleDeleteClick = onDeleteClick;
     this.#destionationList = destinationsList;
+    this.#offersList = offersList;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditItemTemplate(this._state, this.#destionationList);
+    return createEditItemTemplate(this._state, this.#destionationList, this.#offersList);
   }
 
   removeElement() {
@@ -241,6 +252,22 @@ export default class EditEventView extends AbstractStatefulView{
     });
   };
 
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    const selectedOffers = [];
+    const offersAvailableByType = this.#offersList.find((offer) => offer.type === this._state.type).offers;
+    this.element.querySelectorAll('input.event__offer-checkbox:checked').forEach((input) => selectedOffers.push(Number(input.id)));
+    this.updateElement({
+      offers: selectedOffers.map((id) => {
+        const offersMatching = offersAvailableByType.find(
+          (offer) => offer.id === id,
+        );
+        return offersMatching;
+      }),
+    });
+  };
+
   #setDateFromPicker() {
     this.#datepicker = flatpickr(
       this.element.querySelector('#event-start-time-1'),
@@ -281,6 +308,8 @@ export default class EditEventView extends AbstractStatefulView{
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('change', this.#offersChangeHandler);
 
     this.#setDateFromPicker();
     this.#setDateToPicker();

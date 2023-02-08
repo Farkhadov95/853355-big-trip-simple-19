@@ -155,7 +155,8 @@ export default class ListPresenter {
       eventsListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
-      destinationsList: this.#eventsModel.allDestinations
+      destinationsList: this.#eventsModel.allDestinations,
+      offersList: this.#eventsModel.allOffers,
     });
     eventPresenter.init(event);
     this.#eventsPresenters.set(event.id, eventPresenter);

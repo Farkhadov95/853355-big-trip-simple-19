@@ -34,7 +34,9 @@ function createOffersTemplate(offers, isDisabled) {
       <!-- Offers -->
     ${offers.map((offer) => (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.title}" ${isDisabled ? 'disabled' : ''}>
+      <input class="event__offer-checkbox  visually-hidden" id="${offer.id}"
+       type="checkbox" name="${offer.title}"
+        ${isDisabled ? 'disabled' : ''}>
         <label class="event__offer-label" for="event-offer-${offer.id}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -166,7 +168,7 @@ function createAddItemTemplate(data, destinationsList) {
             <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Canceling...' : 'Cancel'}</button>
           </header>
           <section class="event__details">
-              ${createOffersTemplate(offers)}
+              ${createOffersTemplate(offers, isDisabled)}
             <section class="event__section  event__section--destination">
               <h3 class="event__section-title  event__section-title--destination">Destination</h3>
               <p class="event__destination-description">${destinationDescription}</p>
@@ -303,7 +305,7 @@ export default class AddEventView extends AbstractStatefulView{
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
-    this.element.querySelector('.event__available-offers')
+    this.element.querySelector('.event__section--offers')
       .addEventListener('change', this.#offersChangeHandler);
 
     this.#setDateFromPicker();
