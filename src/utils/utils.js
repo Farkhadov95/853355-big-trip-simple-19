@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-// import { mockOffers } from '../mock/events';
 
 const DATE_FORMAT = 'DD/MM/YY HH:mm';
 

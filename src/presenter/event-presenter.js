@@ -62,7 +62,6 @@ export default class EventPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      // replace(this.#editListItemComponent, prevEditListItemComponent);
       replace(this.#listItemComponent, prevEditListItemComponent);
       this.#mode = Mode.DEFAULT;
     }

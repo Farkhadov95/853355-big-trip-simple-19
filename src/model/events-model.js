@@ -98,7 +98,6 @@ export default class EventsModel extends Observable {
   }
 
   #adaptToClient = (event) => {
-    // console.log(event);
     const adaptedEvent = {...event,
       basePrice: event['base_price'],
       dateFrom: event['date_from'] !== null ? new Date(event['date_from']) : event['date_from'],
