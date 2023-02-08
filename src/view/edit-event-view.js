@@ -18,7 +18,7 @@ function createEditItemTemplate(data, destinationsList, offersList) {
     isDisabled
   } = data;
 
-  const destinationNames = destinationsList.map((dest) => (
+  const destinationOptions = destinationsList.map((dest) => (
     `<option value="${dest.name}"></option>`
   )).join('');
 
@@ -40,9 +40,9 @@ function createEditItemTemplate(data, destinationsList, offersList) {
       ${availableOffersByType.map((offer) => (
     `<div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden" id="${offer.id}"
-           type="checkbox" name="${offer.title}" 
-           ${filteredOffersIDs.includes(offer.id) ? 'checked' : ''}
-           ${isDisabled ? 'disabled' : ''}>
+            type="checkbox" name="${offer.title}" 
+            ${filteredOffersIDs.includes(offer.id) ? 'checked' : ''}
+            ${isDisabled ? 'disabled' : ''}>
           <label class="event__offer-label" for="${offer.id}">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
@@ -114,9 +114,11 @@ function createEditItemTemplate(data, destinationsList, offersList) {
           <input class="event__input  event__input--destination"
            id="event-destination-1" type="text"
             name="event-destination" 
-            value="${destination.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+            value="${destination.name}"
+            list="destination-list-1" ${isDisabled ? 'disabled' : ''}
+            required>
           <datalist id="destination-list-1">
-            ${destinationNames}
+            ${destinationOptions}
           </datalist>
         </div>
         <div class="event__field-group  event__field-group--time">
@@ -155,7 +157,7 @@ export default class EditEventView extends AbstractStatefulView{
   #handleFormSubmit = null;
   #hadleDeleteClick = null;
   #datepicker = null;
-  #destionationList = [];
+  #destinationList = [];
   #offersList = [];
 
   constructor({event, onRollUpClick, onFormSubmit, onDeleteClick, destinationsList, offersList}) {
@@ -165,14 +167,14 @@ export default class EditEventView extends AbstractStatefulView{
     this.#handleRollUpClose = onRollUpClick;
     this.#handleFormSubmit = onFormSubmit;
     this.#hadleDeleteClick = onDeleteClick;
-    this.#destionationList = destinationsList;
+    this.#destinationList = destinationsList;
     this.#offersList = offersList;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditItemTemplate(this._state, this.#destionationList, this.#offersList);
+    return createEditItemTemplate(this._state, this.#destinationList, this.#offersList);
   }
 
   removeElement() {
@@ -217,15 +219,26 @@ export default class EditEventView extends AbstractStatefulView{
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      type: evt.target.value
+      type: evt.target.value,
+      offers: []
     });
   };
 
+  #getAllDestinationsNames() {
+    const array = [];
+    this.#destinationList.forEach((dest) => array.push(dest.name));
+    return array;
+  }
+
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    this.updateElement({
-      destination: this.#destionationList.find((dest) => dest.name === evt.target.value)
-    });
+    if (evt.target.value && this.#getAllDestinationsNames().includes(evt.target.value)) {
+      this.updateElement({
+        destination: this.#destinationList.find((dest) => dest.name === evt.target.value)
+      });
+    } else {
+      evt.target.setCustomValidity('Current option is not available');
+    }
   };
 
   #priceChangeHandler = (evt) => {
