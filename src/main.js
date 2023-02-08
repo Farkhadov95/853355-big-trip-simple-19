@@ -5,6 +5,10 @@ import ListPresenter from './presenter/list-presenter.js';
 import NewEventButtonView from './view/add-event-button-view.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import EventsApiService from './events-api-service.js';
+
+const AUTHORIZATION = 'Basic KS2sAV21fdL5sa9j';
+const END_POINT = 'https://19.ecmascript.pages.academy/big-trip-simple';
 
 const tripMainContainer = document.querySelector('.trip-main');
 const filtersContainer = document.querySelector('.trip-main__trip-controls');
@@ -12,13 +16,16 @@ const pageMainContainer = document.querySelector('.page-body__page-main');
 const eventsListContainer = pageMainContainer.querySelector('.trip-events');
 
 const eventListComponent = new EventsListView();
-const eventsModel = new EventsModel();
+
+const eventsModel = new EventsModel({
+  eventsApiService: new EventsApiService(END_POINT, AUTHORIZATION)
+});
+
 const filterModel = new FilterModel();
 
 const newEventButtonComponent = new NewEventButtonView({
   onClick: handleNewEventButtonClick
 });
-render(newEventButtonComponent, tripMainContainer);
 
 const filterPresenter = new FilterPresenter({
   filtersContainer,
@@ -45,5 +52,9 @@ function handleNewEventFormClose() {
 
 filterPresenter.init();
 listPresenter.init();
+eventsModel.init()
+  .finally(() => {
+    render(newEventButtonComponent, tripMainContainer);
+  });
 
 

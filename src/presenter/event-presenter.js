@@ -16,14 +16,18 @@ export default class EventPresenter {
   #event = null;
   #handleDataChange = null;
   #handleModeChange = null;
+  #destinationsList = [];
+  #offersList = [];
 
   #mode = Mode.DEFAULT;
 
 
-  constructor({eventsListContainer, onDataChange, onModeChange}) {
+  constructor({eventsListContainer, onDataChange, onModeChange, destinationsList, offersList}) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#destinationsList = destinationsList;
+    this.#offersList = offersList;
   }
 
   init(event) {
@@ -42,7 +46,9 @@ export default class EventPresenter {
       event: this.#event,
       onRollUpClick: this.#handleRollUpClick,
       onFormSubmit: this.#handleFormSubmit,
-      onDeleteClick: this.#handleDeleteClick
+      onDeleteClick: this.#handleDeleteClick,
+      destinationsList: this.#destinationsList,
+      offersList: this.#offersList
     });
 
     if (prevListItemComponent === null || prevEditListItemComponent === null) {
@@ -55,7 +61,9 @@ export default class EventPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#editListItemComponent, prevEditListItemComponent);
+      // replace(this.#editListItemComponent, prevEditListItemComponent);
+      replace(this.#listItemComponent, prevEditListItemComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevListItemComponent);
@@ -66,6 +74,41 @@ export default class EventPresenter {
   destroy() {
     remove(this.#listItemComponent);
     remove(this.#editListItemComponent);
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editListItemComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editListItemComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#listItemComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editListItemComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editListItemComponent.shake(resetFormState);
   }
 
   resetView() {
@@ -102,7 +145,7 @@ export default class EventPresenter {
       UpdateType.MINOR,
       update
     );
-    this.#replaceEditToEvent();
+    // this.#replaceEditToEvent();
   };
 
   #handleDeleteClick = (event) => {
@@ -111,7 +154,6 @@ export default class EventPresenter {
       UpdateType.MINOR,
       event,
     );
-    this.#replaceEditToEvent();
   };
 
   #handleEditClick = () => {
@@ -119,6 +161,7 @@ export default class EventPresenter {
   };
 
   #handleRollUpClick = () => {
+    this.#editListItemComponent.reset(this.#event);
     this.#replaceEditToEvent();
   };
 

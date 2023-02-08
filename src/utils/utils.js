@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
-import { mockOffers } from '../mock/events';
+// import { mockOffers } from '../mock/events';
 
 const DATE_FORMAT = 'DD/MM/YY HH:MM';
+
+const DATE_FORMAT_LIST = 'MMM-D';
 
 
 function getRandomArrayElement(items) {
@@ -12,8 +14,12 @@ function humanizeEventDueDate(dueDate) {
   return dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
 }
 
-function getMockOffersByType(point) {
-  const offerType = mockOffers.find((offer) => offer.type === point.type).offers;
+function humanizeDateForList(dueDate) {
+  return dueDate ? dayjs(dueDate).format(DATE_FORMAT_LIST) : '';
+}
+
+function getOffersByType(point, allOffers) {
+  const offerType = allOffers.find((offer) => offer.type === point.type).offers;
   return offerType;
 }
 
@@ -35,7 +41,7 @@ function getWeightForNull(dateA, dateB) {
 
 function sortEventsByDay(eventA, eventB) {
   const weight = getWeightForNull(eventA.dateFrom, eventB.dateFrom);
-  return weight ?? dayjs(eventB.dateFrom).diff(dayjs(eventA.dateFrom));
+  return weight ?? dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom));
 }
 
 function sortEventsByPrice(eventA, eventB) {
@@ -53,6 +59,6 @@ function isEventStarted(dateFrom) {
 
 
 export {getRandomArrayElement, humanizeEventDueDate,
-  getMockOffersByType, sortEventsByDay, sortEventsByPrice,
-  isDatesEqual, isEventStarted
+  getOffersByType, sortEventsByDay, sortEventsByPrice,
+  isDatesEqual, isEventStarted, humanizeDateForList
 };
