@@ -241,7 +241,8 @@ export default class AddEventView extends AbstractStatefulView{
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      type: evt.target.value
+      type: evt.target.value,
+      offers: []
     });
   };
 
@@ -253,9 +254,6 @@ export default class AddEventView extends AbstractStatefulView{
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    // this.updateElement({
-    //   destination: this.#destinationList.find((dest) => dest.name === evt.target.value)
-    // });
     if (evt.target.value && this.#getAllDestinationsNames().includes(evt.target.value)) {
       this.updateElement({
         destination: this.#destinationList.find((dest) => dest.name === evt.target.value)

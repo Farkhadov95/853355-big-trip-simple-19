@@ -219,7 +219,8 @@ export default class EditEventView extends AbstractStatefulView{
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      type: evt.target.value
+      type: evt.target.value,
+      offers: []
     });
   };
 

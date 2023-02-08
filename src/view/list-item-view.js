@@ -24,9 +24,9 @@ function createListItemTemplate(data) {
         <h3 class="event__title">${type} ${destination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-19T11:20">${formattedDateFrom}</time>
+            <time class="event__start-time" datetime="${formattedDateFrom}">${formattedDateFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-19T13:00">${formattedDateTo}</time>
+            <time class="event__end-time" datetime="${formattedDateFrom}">${formattedDateTo}</time>
           </p>
         </div>
         <p class="event__price">
