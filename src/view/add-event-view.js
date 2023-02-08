@@ -21,36 +21,11 @@ const initEvent = {
     ]
   },
   'id': '1',
-  'offers':  [{'id': 1, 'title': 'bus - offer 1', 'price': 50 }, {'id': 2, 'title': 'bus - offer 2', 'price': 35 }],
+  'offers':  [],
   'type' : 'bus',
 };
 
-function createOffersTemplate(offers, isDisabled) {
-  if (offers.length !== 0) {
-    return `
-    <section class="event__section  event__section--offers">
-    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-    <div class="event__available-offers">
-      <!-- Offers -->
-    ${offers.map((offer) => (
-    `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="${offer.id}"
-       type="checkbox" name="${offer.title}"
-        ${isDisabled ? 'disabled' : ''}>
-        <label class="event__offer-label" for="event-offer-${offer.id}">
-          <span class="event__offer-title">${offer.title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>`
-  )).join('')}
-    </div>
-    </section>`;
-  }
-  return '';
-}
-
-function createAddItemTemplate(data, destinationsList) {
+function createAddItemTemplate(data, destinationsList, offersList) {
   const {
     basePrice,
     dateFrom,
@@ -72,6 +47,41 @@ function createAddItemTemplate(data, destinationsList) {
   const formattedDateFrom = humanizeEventDueDate(dateFrom);
   const formattedDateTo = humanizeEventDueDate(dateTo);
   const destinationDescription = destination.description;
+
+  const filteredOffers = offers.filter((x) => (x) !== undefined);
+  const availableOffersByType = offersList.find((offer) => offer.type === type).offers;
+  const filteredOffersIDs = [];
+  filteredOffers.forEach((offer) => filteredOffersIDs.push(offer.id));
+
+  function createOffersTemplate() {
+    if (availableOffersByType.length !== 0) {
+      return `
+      <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        <!-- Offers -->
+      ${availableOffersByType.map((offer) => (
+    `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden"
+         id="${offer.id}" type="checkbox"
+          name="${offer.title}" 
+          ${filteredOffersIDs.includes(offer.id) ? ' checked ' : ''} 
+          ${isDisabled ? 'disabled' : ''}>
+        <input class="event__offer-checkbox  visually-hidden" id="${offer.id}"
+         type="checkbox" name="${offer.title}"
+          ${isDisabled ? 'disabled' : ''}>
+          <label class="event__offer-label" for="${offer.id}">
+            <span class="event__offer-title">${offer.title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </label>
+        </div>`
+  )).join('')}
+      </div>
+      </section>`;
+    }
+    return '';
+  }
 
   return (
     `<li class="trip-events__item">
@@ -168,7 +178,7 @@ function createAddItemTemplate(data, destinationsList) {
             <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Canceling...' : 'Cancel'}</button>
           </header>
           <section class="event__details">
-              ${createOffersTemplate(offers, isDisabled)}
+              ${createOffersTemplate()}
             <section class="event__section  event__section--destination">
               <h3 class="event__section-title  event__section-title--destination">Destination</h3>
               <p class="event__destination-description">${destinationDescription}</p>
@@ -193,21 +203,23 @@ export default class AddEventView extends AbstractStatefulView{
   #handleClickClose = null;
   #handleFormSubmit = null;
   #destinationList = null;
+  #offersList = null;
   #datepicker = null;
 
-  constructor({event = initEvent, onCloseClick, onFormSubmit, destinationsList}) {
+  constructor({event = initEvent, onCloseClick, onFormSubmit, allDestinations, allOffers}) {
     super();
     this._setState(AddEventView.parseEventToState(event));
 
     this.#handleClickClose = onCloseClick;
     this.#handleFormSubmit = onFormSubmit;
-    this.#destinationList = destinationsList;
+    this.#destinationList = allDestinations;
+    this.#offersList = allOffers;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createAddItemTemplate(this._state, this.#destinationList);
+    return createAddItemTemplate(this._state, this.#destinationList, this.#offersList);
   }
 
   removeElement() {
@@ -250,11 +262,6 @@ export default class AddEventView extends AbstractStatefulView{
     });
   };
 
-  #offersChangeHandler = (evt) => {
-    evt.preventDefault();
-    // console.log((evt.target).checked);
-  };
-
   #dateFromChangeHandler = ([userDateFrom]) => {
     this.updateElement({
       dateFrom: userDateFrom,
@@ -291,6 +298,25 @@ export default class AddEventView extends AbstractStatefulView{
     );
   }
 
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    const selectedOffers = [];
+    const offersAvailableByType = this.#offersList
+      .find((offer) => offer.type === this._state.type).offers;
+    this.element.querySelectorAll('input.event__offer-checkbox:checked')
+      .forEach((input) => selectedOffers.push(Number(input.id)));
+
+    this.updateElement({
+      offers: selectedOffers.map((id) => {
+        const offersMatching = offersAvailableByType.find(
+          (offer) => offer.id === id,
+        );
+        return offersMatching;
+      }),
+    });
+  };
+
   _restoreHandlers() {
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#closeClickHandler);
@@ -305,8 +331,11 @@ export default class AddEventView extends AbstractStatefulView{
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
-    this.element.querySelector('.event__section--offers')
-      .addEventListener('change', this.#offersChangeHandler);
+    const offersContainer = this.element.querySelector('.event__available-offers');
+    if (offersContainer) {
+      this.element.querySelector('.event__available-offers')
+        .addEventListener('change', this.#offersChangeHandler);
+    }
 
     this.#setDateFromPicker();
     this.#setDateToPicker();

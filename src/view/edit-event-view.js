@@ -31,7 +31,7 @@ function createEditItemTemplate(data, destinationsList, offersList) {
   filteredOffers.forEach((offer) => filteredOffersIDs.push(offer.id));
 
   function createOffersTemplate() {
-    if (offers.length !== 0) {
+    if (availableOffersByType.length !== 0) {
       return `
       <section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -256,8 +256,11 @@ export default class EditEventView extends AbstractStatefulView{
     evt.preventDefault();
 
     const selectedOffers = [];
-    const offersAvailableByType = this.#offersList.find((offer) => offer.type === this._state.type).offers;
-    this.element.querySelectorAll('input.event__offer-checkbox:checked').forEach((input) => selectedOffers.push(Number(input.id)));
+    const offersAvailableByType = this.#offersList
+      .find((offer) => offer.type === this._state.type).offers;
+    this.element.querySelectorAll('input.event__offer-checkbox:checked')
+      .forEach((input) => selectedOffers.push(Number(input.id)));
+
     this.updateElement({
       offers: selectedOffers.map((id) => {
         const offersMatching = offersAvailableByType.find(
@@ -308,8 +311,12 @@ export default class EditEventView extends AbstractStatefulView{
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
-    this.element.querySelector('.event__available-offers')
-      .addEventListener('change', this.#offersChangeHandler);
+
+    const offersContainer = this.element.querySelector('.event__available-offers');
+    if (offersContainer) {
+      this.element.querySelector('.event__available-offers')
+        .addEventListener('change', this.#offersChangeHandler);
+    }
 
     this.#setDateFromPicker();
     this.#setDateToPicker();

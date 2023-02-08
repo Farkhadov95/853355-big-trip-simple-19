@@ -15,14 +15,15 @@ export default class NewEventPresenter {
     this.#handleDestroy = onDestroy;
   }
 
-  init(destinationsList) {
+  init(destinationsList, offersList) {
     if (this.#addEventComponent !== null) {
       return;
     }
     this.#addEventComponent = new AddEventView({
       onCloseClick: this.#handleDeleteClick,
       onFormSubmit: this.#handleFormSubmit,
-      destinationsList,
+      allDestinations: destinationsList,
+      allOffers: offersList
     });
 
     render(this.#addEventComponent, this.#eventsListContainer, RenderPosition.AFTERBEGIN);

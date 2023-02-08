@@ -70,7 +70,7 @@ export default class ListPresenter {
   createEvent() {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#newEventPresenter.init(this.#eventsModel.allDestinations);
+    this.#newEventPresenter.init(this.#eventsModel.allDestinations, this.#eventsModel.allOffers);
   }
 
   #handleModeChange = () => {
