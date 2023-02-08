@@ -253,13 +253,6 @@ export default class EditEventView extends AbstractStatefulView{
     this.#hadleDeleteClick(EditEventView.parseStateToEvent(this._state));
   };
 
-  #dateChangeHandler = ([userDateFrom, userDateTo]) => {
-    this.updateElement({
-      dateFrom: userDateFrom,
-      userDateTo: userDateTo
-    });
-  };
-
   #dateFromChangeHandler = ([userDateFrom]) => {
     this.updateElement({
       dateFrom: userDateFrom,
