@@ -62,14 +62,11 @@ function createAddItemTemplate(data, destinationsList, offersList) {
         <!-- Offers -->
       ${availableOffersByType.map((offer) => (
     `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden"
-         id="${offer.id}" type="checkbox"
-          name="${offer.title}" 
-          ${filteredOffersIDs.includes(offer.id) ? ' checked ' : ''} 
-          ${isDisabled ? 'disabled' : ''}>
-        <input class="event__offer-checkbox  visually-hidden" id="${offer.id}"
-         type="checkbox" name="${offer.title}"
-          ${isDisabled ? 'disabled' : ''}>
+          <input class="event__offer-checkbox  visually-hidden"
+            id="${offer.id}" type="checkbox"
+            name="${offer.title}" 
+            ${filteredOffersIDs.includes(offer.id) ? ' checked ' : ''} 
+            ${isDisabled ? 'disabled' : ''}>
           <label class="event__offer-label" for="${offer.id}">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
@@ -248,11 +245,24 @@ export default class AddEventView extends AbstractStatefulView{
     });
   };
 
+  #getAllDestinationsNames() {
+    const array = [];
+    this.#destinationList.forEach((dest) => array.push(dest.name));
+    return array;
+  }
+
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    this.updateElement({
-      destination: this.#destinationList.find((dest) => dest.name === evt.target.value)
-    });
+    // this.updateElement({
+    //   destination: this.#destinationList.find((dest) => dest.name === evt.target.value)
+    // });
+    if (evt.target.value && this.#getAllDestinationsNames().includes(evt.target.value)) {
+      this.updateElement({
+        destination: this.#destinationList.find((dest) => dest.name === evt.target.value)
+      });
+    } else {
+      evt.target.setCustomValidity('Current option is not available');
+    }
   };
 
   #priceChangeHandler = (evt) => {
@@ -351,11 +361,6 @@ export default class AddEventView extends AbstractStatefulView{
 
   static parseStateToEvent(state) {
     const event = {...state};
-
-    // delete event.isDisabled;
-    // delete event.isSaving;
-    // delete event.isDeleting;
-
     return event;
   }
 

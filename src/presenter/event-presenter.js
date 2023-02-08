@@ -48,7 +48,8 @@ export default class EventPresenter {
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
       destinationsList: this.#destinationsList,
-      offersList: this.#offersList
+      offersList: this.#offersList,
+      onFormError: this.setAborting
     });
 
     if (prevListItemComponent === null || prevEditListItemComponent === null) {
@@ -145,7 +146,6 @@ export default class EventPresenter {
       UpdateType.MINOR,
       update
     );
-    // this.#replaceEditToEvent();
   };
 
   #handleDeleteClick = (event) => {
