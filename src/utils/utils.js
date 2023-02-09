@@ -4,11 +4,6 @@ const DATE_FORMAT = 'DD/MM/YY HH:mm';
 
 const DATE_FORMAT_LIST = 'MMM-D';
 
-
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
 function humanizeEventDueDate(dueDate) {
   return dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
 }
@@ -48,16 +43,12 @@ function sortEventsByPrice(eventA, eventB) {
   return weight ?? (eventB.basePrice - eventA.basePrice);
 }
 
-function isDatesEqual(dateA, dateB) {
-  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
-}
-
 function isEventStarted(dateFrom) {
   return dateFrom && dayjs().isBefore(dateFrom, 'D');
 }
 
 
-export {getRandomArrayElement, humanizeEventDueDate,
+export {humanizeEventDueDate,
   getOffersByType, sortEventsByDay, sortEventsByPrice,
-  isDatesEqual, isEventStarted, humanizeDateForList
+  isEventStarted, humanizeDateForList
 };

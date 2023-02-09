@@ -1,5 +1,3 @@
-const POINTS_TYPE = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-
 const SortType = {
   DAY: 'day',
   PRICE: 'price'
@@ -24,4 +22,4 @@ const UpdateType = {
 };
 
 
-export {POINTS_TYPE, SortType, FilterType, UserAction, UpdateType};
+export {SortType, FilterType, UserAction, UpdateType};
