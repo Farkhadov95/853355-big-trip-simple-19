@@ -22,4 +22,4 @@ To run the application on your local machine, follow these steps:
 * use a link: https://farkhadov95.github.io/853355-big-trip-simple-19/build/
 
 Usage
-Once the application is running, users can plan and organize trips, including selecting destinations, and managing bookings and thier offers. The application is designed to be user-friendly and intuitive.
+Once the application is running, users can plan and organize trips, including selecting destinations, and managing bookings and their offers. The application is designed to be user-friendly and intuitive.
