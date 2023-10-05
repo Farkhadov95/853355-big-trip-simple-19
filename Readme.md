@@ -8,7 +8,7 @@ The application was built using the following technologies:
 * JavaScript
 * Object-Oriented Programming (OOP) with class components
 * Model-View-Presenter (MVP) architecture
-* RESTful API with Fetch API for server communication
+* Fetch API for server communication
 
 Getting Started
 To run the application on your local machine, follow these steps:
